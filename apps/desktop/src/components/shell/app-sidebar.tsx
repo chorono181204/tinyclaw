@@ -1,5 +1,5 @@
 import logoUrl from "../../../../../assets/logo.png";
-import type { ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import { cn } from "../../lib/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
@@ -74,7 +74,7 @@ type MenuItem = {
 
 function SectionChevron() {
   return (
-    <svg aria-hidden="true" className="size-3.5 text-muted-foreground/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <svg aria-hidden="true" className="size-4 text-muted-foreground/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -140,26 +140,35 @@ function SidebarSection({
   open: boolean;
   t: Translator;
 }) {
+  const [expanded, setExpanded] = useState(true);
+
   return (
     <section className={cn("flex flex-col", open ? "gap-1.5" : "items-center gap-3")}>
       {open ? (
-        <div className="flex items-center justify-between px-2.5 pb-2 pt-3">
-          <p className="text-[11px] font-semibold tracking-[0.12em] text-muted-foreground/80">
+        <button
+          className="flex items-center justify-between rounded-lg px-2.5 pb-2 pt-3 text-left outline-none transition-colors hover:text-foreground"
+          onClick={() => setExpanded((value) => !value)}
+          type="button"
+        >
+          <p className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground/90">
             {label}
           </p>
-          <SectionChevron />
-        </div>
+          <span className={cn("transition-transform duration-200", expanded ? "rotate-0" : "-rotate-90")}>
+            <SectionChevron />
+          </span>
+        </button>
       ) : null}
 
-      {items.map((item) => (
-        <SidebarItem
-          active={item.active}
-          icon={item.icon}
-          key={item.key}
-          label={t(`shell.nav.${item.key}`)}
-          open={open}
-        />
-      ))}
+      {(!open || expanded) &&
+        items.map((item) => (
+          <SidebarItem
+            active={item.active}
+            icon={item.icon}
+            key={item.key}
+            label={t(`shell.nav.${item.key}`)}
+            open={open}
+          />
+        ))}
     </section>
   );
 }
@@ -174,7 +183,7 @@ export function AppSidebar({
   return (
     <aside
       className={cn(
-        "shrink-0 border-r border-border/60 bg-sidebar text-sidebar-foreground transition-[width,padding] duration-200",
+        "shrink-0 overflow-y-auto border-r border-border/60 bg-sidebar text-sidebar-foreground transition-[width,padding] duration-200",
         open ? "w-68 px-3 py-4" : "w-16 px-2 py-4"
       )}
     >
