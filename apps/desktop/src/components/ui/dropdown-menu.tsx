@@ -24,7 +24,7 @@ export function DropdownMenuContent({
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         className={cn(
-          "z-50 min-w-48 rounded-xl border border-border/80 bg-popover p-1.5 text-popover-foreground opacity-100 shadow-lg outline-none",
+          "z-50 min-w-48 rounded-xl border border-border bg-popover text-popover-foreground p-1 opacity-100 shadow-lg outline-none",
           className
         )}
         sideOffset={sideOffset}
