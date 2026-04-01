@@ -73,7 +73,7 @@ export function AppHeader({
   t: Translator;
 }) {
   return (
-    <header className="sticky top-0 z-10 border-b border-border/70 bg-background px-6 py-4">
+    <header className="sticky top-0 z-10 border-b border-border/70 bg-surface px-6 py-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center">
           <Button className="rounded-lg" onClick={onToggleSidebar} size="icon" variant="outline">
@@ -81,7 +81,7 @@ export function AppHeader({
           </Button>
         </div>
 
-        <div className="flex flex-wrap items-center justify-end gap-2 rounded-xl border border-border/70 bg-muted/30 p-1">
+        <div className="flex flex-wrap items-center justify-end gap-2 rounded-xl border border-border/70 bg-muted/40 p-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <HeaderSelectButton icon={getLocaleIcon(locale)} label={t(`theme.locale.${locale}`)} />
