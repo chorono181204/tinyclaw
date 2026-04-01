@@ -1,23 +1,93 @@
 import logoUrl from "../../../../../assets/logo.png";
+import type { ReactElement } from "react";
 import { cn } from "../../lib/cn";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../ui/tooltip";
-import { SidebarIcon } from "./icons";
+  AgentsIcon,
+  ChannelsIcon,
+  ChatIcon,
+  CommunicationsIcon,
+  ConfigIcon,
+  CronJobsIcon,
+  DocsIcon,
+  InstancesIcon,
+  NodesIcon,
+  OverviewIcon,
+  SessionsIcon,
+  SkillsIcon,
+  UsageIcon
+} from "./icons";
 import type { Translator } from "../../i18n/provider";
 
-const navKeys = ["workspace", "tasks", "agents", "settings"] as const;
+const menuSections = [
+  {
+    key: "chat",
+    items: [{ key: "chat", icon: ChatIcon, active: true }]
+  },
+  {
+    key: "control",
+    items: [
+      { key: "overview", icon: OverviewIcon },
+      { key: "channels", icon: ChannelsIcon },
+      { key: "instances", icon: InstancesIcon },
+      { key: "sessions", icon: SessionsIcon },
+      { key: "usage", icon: UsageIcon },
+      { key: "cronJobs", icon: CronJobsIcon }
+    ]
+  },
+  {
+    key: "agent",
+    items: [
+      { key: "agents", icon: AgentsIcon },
+      { key: "skills", icon: SkillsIcon },
+      { key: "nodes", icon: NodesIcon }
+    ]
+  },
+  {
+    key: "settings",
+    items: [
+      { key: "config", icon: ConfigIcon },
+      { key: "communications", icon: CommunicationsIcon },
+      { key: "docs", icon: DocsIcon }
+    ]
+  }
+] as const;
 
-function SidebarNavItem({
+type MenuItem = {
+  active?: boolean;
+  icon: () => ReactElement;
+  key:
+    | "chat"
+    | "overview"
+    | "channels"
+    | "instances"
+    | "sessions"
+    | "usage"
+    | "cronJobs"
+    | "agents"
+    | "skills"
+    | "nodes"
+    | "config"
+    | "communications"
+    | "docs";
+};
+
+function SectionChevron() {
+  return (
+    <svg aria-hidden="true" className="size-3.5 text-muted-foreground/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SidebarItem({
   active,
+  icon: Icon,
   label,
-  open,
-  index,
+  open
 }: {
-  active: boolean;
-  index: number;
+  active?: boolean;
+  icon: () => React.JSX.Element;
   label: string;
   open: boolean;
 }) {
@@ -27,19 +97,19 @@ function SidebarNavItem({
       className={cn(
         "flex w-full items-center rounded-xl text-sm outline-none transition-colors",
         active
-          ? "bg-muted text-foreground shadow-xs"
-          : "text-muted-foreground/80 hover:bg-muted/50 hover:text-foreground",
-        open ? "h-11 justify-start px-2.5" : "h-10 w-10 justify-center",
+          ? "bg-[#2a1719] text-foreground shadow-xs ring-1 ring-[#4a272c]"
+          : "text-muted-foreground/80 hover:bg-muted/35 hover:text-foreground",
+        open ? "h-11 justify-start px-2.5" : "h-10 w-10 justify-center"
       )}
       type="button"
     >
       <span className="flex h-10 w-10 shrink-0 items-center justify-center">
-        <SidebarIcon index={index} />
+        <Icon />
       </span>
       <span
         className={cn(
           "overflow-hidden whitespace-nowrap transition-[width,opacity,margin] duration-200",
-          open ? "ml-0.5 w-auto opacity-100" : "ml-0 w-0 opacity-0",
+          open ? "ml-0.5 w-auto opacity-100" : "ml-0 w-0 opacity-0"
         )}
       >
         {label}
@@ -59,6 +129,41 @@ function SidebarNavItem({
   );
 }
 
+function SidebarSection({
+  items,
+  label,
+  open,
+  t
+}: {
+  items: readonly MenuItem[];
+  label: string;
+  open: boolean;
+  t: Translator;
+}) {
+  return (
+    <section className={cn("flex flex-col", open ? "gap-1.5" : "items-center gap-3")}>
+      {open ? (
+        <div className="flex items-center justify-between px-2.5 pb-2 pt-3">
+          <p className="text-[11px] font-semibold tracking-[0.12em] text-muted-foreground/80">
+            {label}
+          </p>
+          <SectionChevron />
+        </div>
+      ) : null}
+
+      {items.map((item) => (
+        <SidebarItem
+          active={item.active}
+          icon={item.icon}
+          key={item.key}
+          label={t(`shell.nav.${item.key}`)}
+          open={open}
+        />
+      ))}
+    </section>
+  );
+}
+
 export function AppSidebar({
   open,
   t
@@ -68,37 +173,27 @@ export function AppSidebar({
 }) {
   return (
     <aside
-      className={`shrink-0 bg-sidebar text-sidebar-foreground transition-[width,padding] duration-200 ${
-        open ? "w-64 px-3 py-4" : "w-16 px-2 py-4"
-      }`}
+      className={cn(
+        "shrink-0 border-r border-border/60 bg-sidebar text-sidebar-foreground transition-[width,padding] duration-200",
+        open ? "w-68 px-3 py-4" : "w-16 px-2 py-4"
+      )}
     >
       <div className="flex h-full flex-col">
-        <div className="flex justify-center pb-6">
-          <div className="flex items-center justify-center">
-            <img
-              alt={t("theme.brand")}
-              className="h-7 w-7 shrink-0"
-              src={logoUrl}
-            />
-          </div>
+        <div className="flex items-center justify-center pb-6">
+          <img alt={t("theme.brand")} className="h-7 w-7 shrink-0" src={logoUrl} />
         </div>
 
-        <nav
-          className={cn(
-            "flex flex-col",
-            open ? "gap-1.5 pt-2" : "items-center gap-3 pt-2",
-          )}
-        >
-          {navKeys.map((item, index) => (
-            <SidebarNavItem
-              active={index === 0}
-              index={index}
-              key={item}
-              label={t(`shell.nav.${item}`)}
+        <div className={cn("flex flex-col", open ? "gap-4" : "gap-5")}>
+          {menuSections.map((section) => (
+            <SidebarSection
+              items={section.items}
+              key={section.key}
+              label={t(`shell.sections.${section.key}`)}
               open={open}
+              t={t}
             />
           ))}
-        </nav>
+        </div>
       </div>
     </aside>
   );

@@ -22,7 +22,7 @@ export function OverviewContent({ t }: { t: Translator }) {
       <CardContent className="px-8 pb-8 pt-2">
         <div className="rounded-2xl border border-border bg-muted/30 px-5 py-4">
           <p className="text-sm font-medium text-foreground">
-            {t("shell.nav.workspace")}
+            {t("shell.nav.chat")}
           </p>
         </div>
       </CardContent>

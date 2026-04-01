@@ -13,11 +13,26 @@ export const vi = {
       newTask: "Tạo task",
       runCheck: "Chạy kiểm tra"
     },
+    sections: {
+      chat: "Chat",
+      control: "Control",
+      agent: "Agent",
+      settings: "Settings"
+    },
     nav: {
-      workspace: "Không gian làm việc",
-      tasks: "Nhiệm vụ",
+      chat: "Chat",
+      overview: "Overview",
+      channels: "Channels",
+      instances: "Instances",
+      sessions: "Sessions",
+      usage: "Usage",
+      cronJobs: "Cron jobs",
       agents: "Agents",
-      settings: "Cài đặt"
+      skills: "Skills",
+      nodes: "Nodes",
+      config: "Config",
+      communications: "Communications",
+      docs: "Docs"
     },
     panel: {
       title: "Khung dự án",
