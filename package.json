@@ -1,0 +1,13 @@
+{
+  "name": "tinyclaw",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev": "pnpm --dir apps/desktop dev",
+    "dev:api": "powershell -ExecutionPolicy Bypass -File ./scripts/dev/start-api.ps1",
+    "dev:desktop": "powershell -ExecutionPolicy Bypass -File ./scripts/dev/start-desktop.ps1",
+    "build": "pnpm --dir apps/desktop build",
+    "lint": "echo \"lint targets will be added with app bootstrapping\""
+  }
+}

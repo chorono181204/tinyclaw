@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a broken behavior in tinyclaw
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Tell us how to reproduce the issue.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: 0.1.0

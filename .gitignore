@@ -1,0 +1,29 @@
+# Node
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+
+# Python
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+*.pyc
+
+# Tauri / Rust
+target/
+src-tauri/target/
+
+# Env
+.env
+.env.local
+
+# Local project operations
+project/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
