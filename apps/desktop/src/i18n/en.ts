@@ -13,11 +13,26 @@ export const en = {
       newTask: "New task",
       runCheck: "Run check"
     },
-    nav: {
-      workspace: "Workspace",
-      tasks: "Tasks",
-      agents: "Agents",
+    sections: {
+      chat: "Chat",
+      control: "Control",
+      agent: "Agent",
       settings: "Settings"
+    },
+    nav: {
+      chat: "Chat",
+      overview: "Overview",
+      channels: "Channels",
+      instances: "Instances",
+      sessions: "Sessions",
+      usage: "Usage",
+      cronJobs: "Cron jobs",
+      agents: "Agents",
+      skills: "Skills",
+      nodes: "Nodes",
+      config: "Config",
+      communications: "Communications",
+      docs: "Docs"
     },
     panel: {
       title: "Project shell",

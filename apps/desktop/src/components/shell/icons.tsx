@@ -108,3 +108,117 @@ export function SidebarIcon({ index }: { index: number }) {
     </svg>
   );
 }
+
+export function ChatIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M7 17.25H4.75A1.75 1.75 0 0 1 3 15.5v-8A1.75 1.75 0 0 1 4.75 5.75h14.5A1.75 1.75 0 0 1 21 7.5v8a1.75 1.75 0 0 1-1.75 1.75H11l-4 3.25Z" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function OverviewIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M6 18V10M12 18V6M18 18v-4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ChannelsIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M9.5 14.5a4 4 0 0 1 0-5.66l2.5-2.5a4 4 0 0 1 5.66 5.66l-1.5 1.5" strokeLinecap="round" />
+      <path d="M14.5 9.5a4 4 0 0 1 0 5.66l-2.5 2.5a4 4 0 1 1-5.66-5.66l1.5-1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function InstancesIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="7.5" cy="12" r="2.25" />
+      <circle cx="16.5" cy="12" r="2.25" />
+      <path d="M9.75 12h4.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function SessionsIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M7 4.75h8l3 3v11.5A1.75 1.75 0 0 1 16.25 21h-9.5A1.75 1.75 0 0 1 5 19.25v-12.75A1.75 1.75 0 0 1 6.75 4.75Z" strokeLinejoin="round" />
+      <path d="M9 11h6M9 15h6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function UsageIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M6 18V12M12 18V8M18 18V5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function CronJobsIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M12 5.25v2.25M12 16.5v2.25M18.75 12H16.5M7.5 12H5.25M16.77 7.23l-1.6 1.6M8.83 15.17l-1.6 1.6M16.77 16.77l-1.6-1.6M8.83 8.83l-1.6-1.6" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="3.25" />
+    </svg>
+  );
+}
+
+export function AgentsIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M4.75 7.75h8.5a1.75 1.75 0 0 1 1.75 1.75v6.75a1.75 1.75 0 0 1-1.75 1.75h-8.5A1.75 1.75 0 0 1 3 16.25V9.5a1.75 1.75 0 0 1 1.75-1.75Z" strokeLinejoin="round" />
+      <path d="M15 10.5h4.25A1.75 1.75 0 0 1 21 12.25v4a1.75 1.75 0 0 1-1.75 1.75H15" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function SkillsIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="m12 3.75 1.85 4.53 4.9.35-3.73 3.03 1.2 4.77L12 13.8l-4.22 2.63 1.2-4.77-3.73-3.03 4.9-.35L12 3.75Z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function NodesIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="4" y="5" width="16" height="11" rx="1.75" />
+      <path d="M9 19h6M12 16v3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ConfigIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 2.75v2.5M12 18.75v2.5M21.25 12h-2.5M5.25 12h-2.5M18.54 5.46l-1.77 1.77M7.23 16.77l-1.77 1.77M18.54 18.54l-1.77-1.77M7.23 7.23 5.46 5.46" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function CommunicationsIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="m4.75 11.5 14.5-6.25-3.5 13-4.75-4-6.25-2.75Z" strokeLinejoin="round" />
+      <path d="m10.5 14.25 4.25-5.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function DocsIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M6.75 4.75h9.5A1.75 1.75 0 0 1 18 6.5v11a1.75 1.75 0 0 1-1.75 1.75h-9.5A1.75 1.75 0 0 1 5 17.5v-11a1.75 1.75 0 0 1 1.75-1.75Z" />
+      <path d="M8.5 9h6.5M8.5 12h6.5M8.5 15h4" strokeLinecap="round" />
+    </svg>
+  );
+}
