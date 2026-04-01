@@ -25,5 +25,7 @@
 
 - create a task file before meaningful implementation
 - create or switch to a dedicated git branch for that task
+- keep branch names short and work-based, such as `feature/<name>` or `fix/<name>`
+- do not include planning prefixes like `p1`, `p2`, or similar roadmap markers in branch names
 - complete all required test stages before calling the task done
 - finish with a clean project-standard commit message

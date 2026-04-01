@@ -53,6 +53,8 @@ Each task also owns its git execution flow:
 3. finish with a clean project-standard commit message
 4. record branch and commit details in the task outcome
 
+Branch names should stay short and feature-based, such as `feature/sidebar-navigation` or `fix/dropdown-trigger`. Do not encode roadmap or phase IDs like `p1` or `p2` into branch names.
+
 ## Delivery Standards
 
 - keep code clean and easy to reuse

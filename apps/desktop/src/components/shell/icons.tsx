@@ -164,8 +164,8 @@ export function UsageIcon() {
 export function CronJobsIcon() {
   return (
     <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M12 5.25v2.25M12 16.5v2.25M18.75 12H16.5M7.5 12H5.25M16.77 7.23l-1.6 1.6M8.83 15.17l-1.6 1.6M16.77 16.77l-1.6-1.6M8.83 8.83l-1.6-1.6" strokeLinecap="round" />
-      <circle cx="12" cy="12" r="3.25" />
+      <circle cx="12" cy="12" r="7.25" />
+      <path d="M12 8.5v4l2.75 1.75" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -173,8 +173,9 @@ export function CronJobsIcon() {
 export function AgentsIcon() {
   return (
     <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M4.75 7.75h8.5a1.75 1.75 0 0 1 1.75 1.75v6.75a1.75 1.75 0 0 1-1.75 1.75h-8.5A1.75 1.75 0 0 1 3 16.25V9.5a1.75 1.75 0 0 1 1.75-1.75Z" strokeLinejoin="round" />
-      <path d="M15 10.5h4.25A1.75 1.75 0 0 1 21 12.25v4a1.75 1.75 0 0 1-1.75 1.75H15" strokeLinejoin="round" />
+      <rect x="5" y="7" width="14" height="10" rx="3" />
+      <path d="M9 7V5.25M15 7V5.25M9.5 11.25h.01M14.5 11.25h.01" strokeLinecap="round" />
+      <path d="M9.5 14.25h5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -182,7 +183,7 @@ export function AgentsIcon() {
 export function SkillsIcon() {
   return (
     <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="m12 3.75 1.85 4.53 4.9.35-3.73 3.03 1.2 4.77L12 13.8l-4.22 2.63 1.2-4.77-3.73-3.03 4.9-.35L12 3.75Z" strokeLinejoin="round" />
+      <path d="M13.25 2.75 6.75 12h4.5l-1.25 9.25L17.25 12h-4.5l.5-9.25Z" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -199,8 +200,9 @@ export function NodesIcon() {
 export function ConfigIcon() {
   return (
     <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 2.75v2.5M12 18.75v2.5M21.25 12h-2.5M5.25 12h-2.5M18.54 5.46l-1.77 1.77M7.23 16.77l-1.77 1.77M18.54 18.54l-1.77-1.77M7.23 7.23 5.46 5.46" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M12 4.5v1.5M12 18v1.5M19.5 12H18M6 12H4.5M17.3 6.7l-1.05 1.05M7.75 16.25 6.7 17.3M17.3 17.3l-1.05-1.05M7.75 7.75 6.7 6.7" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="6.25" />
     </svg>
   );
 }
@@ -219,6 +221,30 @@ export function DocsIcon() {
     <svg aria-hidden="true" className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="M6.75 4.75h9.5A1.75 1.75 0 0 1 18 6.5v11a1.75 1.75 0 0 1-1.75 1.75h-9.5A1.75 1.75 0 0 1 5 17.5v-11a1.75 1.75 0 0 1 1.75-1.75Z" />
       <path d="M8.5 9h6.5M8.5 12h6.5M8.5 15h4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function MinimizeIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M6 12h12" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function MaximizeIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="6" y="6" width="12" height="12" rx="1.5" />
+    </svg>
+  );
+}
+
+export function CloseWindowIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M7 7 17 17M17 7 7 17" strokeLinecap="round" />
     </svg>
   );
 }

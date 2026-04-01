@@ -2,10 +2,10 @@ export const vi = {
   shell: {
     search: "Tìm trong workspace",
     workspace: "Không gian làm việc",
-    projectName: "tinyclaw desktop",
+    projectName: "Ducky desktop",
     menu: "Ẩn hiện thanh bên",
     hero: {
-      title: "Khung desktop gọn hơn cho tinyclaw",
+      title: "Khung desktop gọn hơn cho Ducky",
       summary:
         "Layout giờ tập trung vào cấu trúc tái sử dụng thay vì code demo, với header thật, sidebar có thể thu gọn, chọn ngôn ngữ, chọn theme, dropdown menu và modal nền."
     },
@@ -80,7 +80,7 @@ export const vi = {
     }
   },
   theme: {
-    brand: "tinyclaw",
+    brand: "Ducky",
     sections: {
       ui: "Mẫu giao diện"
     },

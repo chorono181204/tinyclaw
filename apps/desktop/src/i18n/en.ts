@@ -2,10 +2,10 @@ export const en = {
   shell: {
     search: "Search workspace",
     workspace: "Workspace",
-    projectName: "tinyclaw desktop",
+    projectName: "Ducky desktop",
     menu: "Toggle sidebar",
     hero: {
-      title: "A cleaner desktop shell for tinyclaw",
+      title: "A cleaner desktop shell for Ducky",
       summary:
         "The layout now focuses on reusable structure instead of demo-only code, with a real header, collapsible sidebar, language choice, theme selection, dropdown menus, and modal foundations."
     },
@@ -80,7 +80,7 @@ export const en = {
     }
   },
   theme: {
-    brand: "tinyclaw",
+    brand: "Ducky",
     sections: {
       ui: "Interface samples"
     },

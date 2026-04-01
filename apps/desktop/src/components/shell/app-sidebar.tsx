@@ -1,4 +1,4 @@
-import logoUrl from "../../../../../assets/logo.png";
+import logoUrl from "../../assets/logo-ui.png";
 import { useState, type ReactElement } from "react";
 import { cn } from "../../lib/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -95,15 +95,15 @@ function SidebarItem({
     <button
       aria-label={label}
       className={cn(
-        "flex w-full items-center rounded-xl text-sm outline-none transition-colors",
+        "flex w-full items-center rounded-[var(--radius)] text-sm outline-none transition-colors",
         active
-          ? "bg-[#2a1719] text-foreground shadow-xs ring-1 ring-[#4a272c]"
+          ? "bg-primary/14 text-foreground shadow-xs ring-1 ring-primary/25 hover:bg-primary/18 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
           : "text-muted-foreground/80 hover:bg-muted/35 hover:text-foreground",
-        open ? "h-11 justify-start px-2.5" : "h-10 w-10 justify-center"
+        open ? "h-9 justify-start px-2.5" : "size-9 justify-center"
       )}
       type="button"
     >
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center">
+      <span className="flex size-9 shrink-0 items-center justify-center">
         <Icon />
       </span>
       <span
@@ -189,7 +189,11 @@ export function AppSidebar({
     >
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-center pb-6">
-          <img alt={t("theme.brand")} className="h-7 w-7 shrink-0" src={logoUrl} />
+          <img
+            alt={t("theme.brand")}
+            className="h-8 w-auto shrink-0 object-contain"
+            src={logoUrl}
+          />
         </div>
 
         <div className={cn("flex flex-col", open ? "gap-4" : "gap-5")}>
