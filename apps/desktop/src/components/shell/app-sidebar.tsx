@@ -27,8 +27,8 @@ function SidebarNavItem({
       className={cn(
         "flex w-full items-center rounded-xl text-sm outline-none transition-colors",
         active
-          ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-xs"
-          : "text-muted-foreground/80 hover:bg-sidebar-muted hover:text-sidebar-foreground",
+          ? "bg-muted text-foreground shadow-xs"
+          : "text-muted-foreground/80 hover:bg-muted/50 hover:text-foreground",
         open ? "h-11 justify-start px-2.5" : "h-10 w-10 justify-center",
       )}
       type="button"
@@ -68,7 +68,7 @@ export function AppSidebar({
 }) {
   return (
     <aside
-      className={`shrink-0 rounded-2xl border border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width,padding] duration-200 ${
+      className={`shrink-0 bg-sidebar text-sidebar-foreground transition-[width,padding] duration-200 ${
         open ? "w-64 px-3 py-4" : "w-16 px-2 py-4"
       }`}
     >

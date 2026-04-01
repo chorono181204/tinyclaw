@@ -9,8 +9,8 @@ export function AppShell({
   sidebar: ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-shell text-shell-foreground">
-      <div className="flex min-h-screen gap-2 bg-shell p-2">
+    <main className="min-h-screen bg-background text-foreground">
+      <div className="flex min-h-screen gap-2 bg-muted/20 p-2">
         {sidebar}
         {children}
       </div>
@@ -20,7 +20,7 @@ export function AppShell({
 
 export function AppShellSurface({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border/70 bg-surface text-surface-foreground shadow-xs">
+    <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-background shadow-xs">
       {children}
     </div>
   );
