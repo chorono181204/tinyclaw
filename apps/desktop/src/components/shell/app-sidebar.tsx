@@ -1,8 +1,63 @@
 import logoUrl from "../../../../../assets/logo.png";
+import { cn } from "../../lib/cn";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../ui/tooltip";
 import { SidebarIcon } from "./icons";
 import type { Translator } from "../../i18n/provider";
 
 const navKeys = ["workspace", "tasks", "agents", "settings"] as const;
+
+function SidebarNavItem({
+  active,
+  label,
+  open,
+  index,
+}: {
+  active: boolean;
+  index: number;
+  label: string;
+  open: boolean;
+}) {
+  const button = (
+    <button
+      aria-label={label}
+      className={cn(
+        "flex w-full items-center rounded-xl text-sm outline-none transition-colors",
+        active
+          ? "bg-muted text-foreground shadow-xs"
+          : "text-muted-foreground/80 hover:bg-muted/50 hover:text-foreground",
+        open ? "h-11 justify-start px-2.5" : "h-10 w-10 justify-center",
+      )}
+      type="button"
+    >
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center">
+        <SidebarIcon index={index} />
+      </span>
+      <span
+        className={cn(
+          "overflow-hidden whitespace-nowrap transition-[width,opacity,margin] duration-200",
+          open ? "ml-0.5 w-auto opacity-100" : "ml-0 w-0 opacity-0",
+        )}
+      >
+        {label}
+      </span>
+    </button>
+  );
+
+  if (open) {
+    return button;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent side="right">{label}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function AppSidebar({
   open,
@@ -28,29 +83,20 @@ export function AppSidebar({
           </div>
         </div>
 
-        <nav className={`flex flex-col ${open ? "gap-1.5 pt-2" : "items-center gap-3 pt-2"}`}>
+        <nav
+          className={cn(
+            "flex flex-col",
+            open ? "gap-1.5 pt-2" : "items-center gap-3 pt-2",
+          )}
+        >
           {navKeys.map((item, index) => (
-            <button
-              aria-label={t(`shell.nav.${item}`)}
-              className={`flex w-full items-center rounded-xl text-sm transition-colors ${
-                index === 0
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground/80 hover:bg-muted/50 hover:text-foreground"
-              } ${open ? "h-11 justify-start px-2.5" : "h-10 w-10 justify-center"}`}
+            <SidebarNavItem
+              active={index === 0}
+              index={index}
               key={item}
-              type="button"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center">
-                <SidebarIcon index={index} />
-              </span>
-              <span
-                className={`overflow-hidden whitespace-nowrap transition-[width,opacity,margin] duration-200 ${
-                  open ? "ml-0.5 w-auto opacity-100" : "ml-0 w-0 opacity-0"
-                }`}
-              >
-                {t(`shell.nav.${item}`)}
-              </span>
-            </button>
+              label={t(`shell.nav.${item}`)}
+              open={open}
+            />
           ))}
         </nav>
       </div>
