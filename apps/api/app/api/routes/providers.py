@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from app.schemas.providers import (
     CustomProviderCreateRequest,
     CustomProviderCreateResponse,
+    ProviderConnectionTestResponse,
     ProviderListResponse,
     ProviderUpdateRequest,
     ProviderUpdateResponse,
@@ -10,6 +11,7 @@ from app.schemas.providers import (
 from app.services.provider_service import (
     create_custom_provider,
     list_provider_items,
+    test_provider_connection,
     update_provider_api_key,
 )
 
@@ -40,3 +42,11 @@ def update_provider(
     except KeyError as error:
         raise HTTPException(status_code=404, detail="Provider not found") from error
     return ProviderUpdateResponse(item=item)
+
+
+@router.post("/{provider_id}/test", response_model=ProviderConnectionTestResponse)
+def test_provider(provider_id: str) -> ProviderConnectionTestResponse:
+    try:
+        return test_provider_connection(provider_id)
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail="Provider not found") from error

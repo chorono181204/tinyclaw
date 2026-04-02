@@ -5,6 +5,7 @@ description = "Local FastAPI backend for tinyclaw"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.116.0",
+  "httpx>=0.28.0",
   "pydantic-settings>=2.10.0",
   "uvicorn[standard]>=0.35.0"
 ]

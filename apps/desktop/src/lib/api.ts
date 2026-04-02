@@ -26,6 +26,12 @@ type CustomProviderCreateResponse = {
   item: ProviderItem;
 };
 
+export type ProviderConnectionTestResult = {
+  ok: boolean;
+  message: string;
+  status_code: number | null;
+};
+
 export type SessionItem = {
   id: string;
   title: string;
@@ -97,6 +103,12 @@ export function createCustomProvider(payload: {
   return request<CustomProviderCreateResponse>("/providers", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+export function testProviderConnection(providerId: string) {
+  return request<ProviderConnectionTestResult>(`/providers/${providerId}/test`, {
+    method: "POST",
   });
 }
 

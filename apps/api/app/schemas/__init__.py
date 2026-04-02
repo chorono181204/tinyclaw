@@ -2,6 +2,7 @@
 from app.schemas.providers import (
     CustomProviderCreateRequest,
     CustomProviderCreateResponse,
+    ProviderConnectionTestResponse,
     ProviderItem,
     ProviderListResponse,
     ProviderUpdateRequest,
@@ -20,6 +21,7 @@ from app.schemas.sessions import (
 __all__ = [
     "CustomProviderCreateRequest",
     "CustomProviderCreateResponse",
+    "ProviderConnectionTestResponse",
     "ProviderItem",
     "ProviderListResponse",
     "ProviderUpdateRequest",
