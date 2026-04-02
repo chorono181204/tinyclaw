@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { cn } from "../../lib/cn";
+
 
 export function AppShell({
   children,
@@ -9,8 +11,8 @@ export function AppShell({
   sidebar: ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <div className="flex min-h-screen gap-2 bg-muted/20 p-2">
+    <main className="h-screen overflow-hidden bg-background text-foreground">
+      <div className="flex h-full gap-2 bg-muted/20 p-2">
         {sidebar}
         {children}
       </div>
@@ -26,10 +28,30 @@ export function AppShellSurface({ children }: { children: ReactNode }) {
   );
 }
 
-export function AppShellContent({ children }: { children: ReactNode }) {
+export function AppShellContent({
+  children,
+  className,
+  containerClassName,
+}: {
+  children: ReactNode;
+  className?: string;
+  containerClassName?: string;
+}) {
   return (
-    <section className="flex-1 overflow-y-auto px-6 py-6">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">{children}</div>
+    <section
+      className={cn(
+        "app-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-6",
+        className,
+      )}
+    >
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-6xl flex-col gap-6",
+          containerClassName,
+        )}
+      >
+        {children}
+      </div>
     </section>
   );
 }

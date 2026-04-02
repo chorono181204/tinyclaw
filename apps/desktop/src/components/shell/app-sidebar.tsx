@@ -19,10 +19,25 @@ import {
 } from "./icons";
 import type { Translator } from "../../i18n/provider";
 
+export type AppRouteKey =
+  | "chat"
+  | "overview"
+  | "channels"
+  | "instances"
+  | "sessions"
+  | "usage"
+  | "cronJobs"
+  | "agents"
+  | "skills"
+  | "nodes"
+  | "config"
+  | "communications"
+  | "docs";
+
 const menuSections = [
   {
     key: "chat",
-    items: [{ key: "chat", icon: ChatIcon, active: true }]
+    items: [{ key: "chat", icon: ChatIcon }]
   },
   {
     key: "control",
@@ -54,22 +69,8 @@ const menuSections = [
 ] as const;
 
 type MenuItem = {
-  active?: boolean;
   icon: () => ReactElement;
-  key:
-    | "chat"
-    | "overview"
-    | "channels"
-    | "instances"
-    | "sessions"
-    | "usage"
-    | "cronJobs"
-    | "agents"
-    | "skills"
-    | "nodes"
-    | "config"
-    | "communications"
-    | "docs";
+  key: AppRouteKey;
 };
 
 function SectionChevron() {
@@ -84,11 +85,13 @@ function SidebarItem({
   active,
   icon: Icon,
   label,
+  onPress,
   open
 }: {
   active?: boolean;
   icon: () => React.JSX.Element;
   label: string;
+  onPress: () => void;
   open: boolean;
 }) {
   const button = (
@@ -101,6 +104,7 @@ function SidebarItem({
           : "text-muted-foreground/80 hover:bg-muted/35 hover:text-foreground",
         open ? "h-9 justify-start px-2.5" : "size-9 justify-center"
       )}
+      onClick={onPress}
       type="button"
     >
       <span className="flex size-9 shrink-0 items-center justify-center">
@@ -132,11 +136,15 @@ function SidebarItem({
 function SidebarSection({
   items,
   label,
+  onNavigate,
+  activeKey,
   open,
   t
 }: {
+  activeKey: AppRouteKey;
   items: readonly MenuItem[];
   label: string;
+  onNavigate: (key: AppRouteKey) => void;
   open: boolean;
   t: Translator;
 }) {
@@ -162,10 +170,11 @@ function SidebarSection({
       {(!open || expanded) &&
         items.map((item) => (
           <SidebarItem
-            active={item.active}
+            active={item.key === activeKey}
             icon={item.icon}
             key={item.key}
             label={t(`shell.nav.${item.key}`)}
+            onPress={() => onNavigate(item.key)}
             open={open}
           />
         ))}
@@ -174,16 +183,20 @@ function SidebarSection({
 }
 
 export function AppSidebar({
+  activeKey,
+  onNavigate,
   open,
   t
 }: {
+  activeKey: AppRouteKey;
+  onNavigate: (key: AppRouteKey) => void;
   open: boolean;
   t: Translator;
 }) {
   return (
     <aside
       className={cn(
-        "shrink-0 overflow-y-auto border-r border-border/60 bg-sidebar text-sidebar-foreground transition-[width,padding] duration-200",
+        "app-scrollbar h-full shrink-0 overflow-y-auto border-r border-border/60 bg-sidebar text-sidebar-foreground transition-[width,padding] duration-200",
         open ? "w-68 px-3 py-4" : "w-16 px-2 py-4"
       )}
     >
@@ -199,9 +212,11 @@ export function AppSidebar({
         <div className={cn("flex flex-col", open ? "gap-4" : "gap-5")}>
           {menuSections.map((section) => (
             <SidebarSection
+              activeKey={activeKey}
               items={section.items}
               key={section.key}
               label={t(`shell.sections.${section.key}`)}
+              onNavigate={onNavigate}
               open={open}
               t={t}
             />
