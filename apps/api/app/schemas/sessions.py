@@ -38,4 +38,5 @@ class SessionMessagesResponse(BaseModel):
 
 class SessionSendRequest(BaseModel):
     message: str = Field(min_length=1)
+    provider_id: str | None = None
     model: str | None = None
