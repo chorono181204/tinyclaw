@@ -17,6 +17,7 @@ from app.schemas.sessions import (
     SessionMessagesResponse,
     SessionSendRequest,
 )
+from app.schemas.settings import ChatDefaults, SettingsResponse, SettingsUpdateRequest
 
 __all__ = [
     "CustomProviderCreateRequest",
@@ -33,4 +34,7 @@ __all__ = [
     "SessionMessage",
     "SessionMessagesResponse",
     "SessionSendRequest",
+    "ChatDefaults",
+    "SettingsResponse",
+    "SettingsUpdateRequest",
 ]

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     enable_docs: bool = True
     provider_store_path: Path = Path(".tinyclaw/providers.json")
+    app_settings_store_path: Path = Path(".tinyclaw/settings.json")
     session_store_path: Path = Path(".tinyclaw/sessions.json")
 
     model_config = SettingsConfigDict(
