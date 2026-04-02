@@ -11,6 +11,7 @@ import { NewTaskDialog } from "./components/shell/new-task-dialog";
 import { OverviewContent } from "./components/shell/overview-content";
 import { ChatScreen } from "./features/chat/chat-screen";
 import { OnboardingScreen } from "./features/onboarding/onboarding-screen";
+import { SessionsScreen } from "./features/sessions/sessions-screen";
 import { ProviderSettingsScreen } from "./features/settings/provider-settings-screen";
 import { useI18n } from "./i18n/provider";
 import { getAppSettings } from "./lib/api";
@@ -20,6 +21,7 @@ export function App() {
   const [activeRoute, setActiveRoute] = useState<AppRouteKey>("chat");
   const [appReady, setAppReady] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
 
@@ -63,7 +65,18 @@ export function App() {
           />
         )
       : activeRoute === "chat"
-      ? <ChatScreen t={t} />
+      ? <ChatScreen initialSessionId={selectedSessionId} onSessionChange={setSelectedSessionId} t={t} />
+      : activeRoute === "sessions"
+        ? (
+            <SessionsScreen
+              activeSessionId={selectedSessionId}
+              onOpenChatSession={(sessionId) => {
+                setSelectedSessionId(sessionId);
+                setActiveRoute("chat");
+              }}
+              t={t}
+            />
+          )
       : activeRoute === "config"
         ? <ProviderSettingsScreen t={t} />
         : <OverviewContent t={t} />;
