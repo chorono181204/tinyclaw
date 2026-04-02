@@ -6,10 +6,18 @@ export const vi = {
       review: "review"
     },
     tools: {
+      title: "Công cụ",
+      description: "Xem nhanh các công cụ cục bộ đang khả dụng cho lượt chat hiện tại.",
+      enabled: "Đã bật",
+      blocked: "Bị chặn",
+      result: "Kết quả",
+      readCategory: "Đọc",
+      execCategory: "Thực thi",
       completed: "Hoàn tất",
       running: "Đang chạy",
       execLabel: "exec",
       readLabel: "read",
+      empty: "Hoạt động công cụ sẽ xuất hiện ở đây trong lúc chat chạy.",
       execSummary: "1 tool exec",
       readSummary: "1 tool read",
       execDetail: "với lệnh liệt kê file trong skills, `ls skills`",
@@ -48,6 +56,7 @@ export const vi = {
     },
     errors: {
       load: "Chưa tải được phiên chat này.",
+      tools: "Chưa tải được danh mục công cụ lúc này.",
       send: "Chưa gửi được tin nhắn này."
     }
   },

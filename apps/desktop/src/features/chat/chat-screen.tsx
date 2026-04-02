@@ -16,6 +16,13 @@ import {
 } from "../../components/shell/icons";
 import { Button } from "../../components/ui/button";
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "../../components/ui/sheet";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -31,7 +38,9 @@ import {
   type ChatStreamEvent,
   type SessionItem,
   type SessionMessage,
+  type ToolCatalogItem,
   getSession,
+  listTools,
   listChatModels,
   listSessions,
   sendSessionMessage,
@@ -48,6 +57,9 @@ type ToolItem = {
   kind: "exec" | "read";
   status: "completed" | "running";
   summary: string;
+  toolId: string;
+  toolName: string;
+  resultSummary?: string;
 };
 
 function ToolbarSelect({
@@ -108,17 +120,28 @@ function ChatActionButton({
 }
 
 function ToolSummary({
+  expanded,
   item,
+  onToggle,
   t,
 }: {
+  expanded: boolean;
   item: ToolItem;
+  onToggle: () => void;
   t: Translator;
 }) {
   const isRead = item.kind === "read";
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 text-sm">
+      <button
+        className="flex w-full items-center gap-2 text-left text-sm"
+        onClick={onToggle}
+        type="button"
+      >
+        <span className={cn("transition-transform", expanded ? "rotate-90" : "")}>
+          <ExpandIcon />
+        </span>
         <span className="text-primary">
           <ZapIcon />
         </span>
@@ -126,16 +149,23 @@ function ToolSummary({
         <span className="text-muted-foreground">
           {isRead ? t("chat.tools.readLabel") : t("chat.tools.execLabel")}
         </span>
-      </div>
+      </button>
 
+      {expanded ? (
       <div className="rounded-[calc(var(--radius)+2px)] bg-card px-5 py-4">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
               {isRead ? <FileTextIcon /> : <WrenchIcon />}
-              <span>{isRead ? t("chat.tools.readLabel") : t("chat.tools.execLabel")}</span>
+              <span>{item.toolName}</span>
             </div>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{item.detail}</p>
+            {item.resultSummary ? (
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">{t("chat.tools.result")}: </span>
+                {item.resultSummary}
+              </p>
+            ) : null}
             <p className="text-sm text-muted-foreground/80">
               {item.status === "completed" ? t("chat.tools.completed") : t("chat.tools.running")}
             </p>
@@ -146,7 +176,71 @@ function ToolSummary({
           </span>
         </div>
       </div>
+      ) : null}
     </div>
+  );
+}
+
+function ToolsSheet({
+  items,
+  open,
+  onOpenChange,
+  t,
+}: {
+  items: ToolCatalogItem[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  t: Translator;
+}) {
+  return (
+    <Sheet onOpenChange={onOpenChange} open={open}>
+      <SheetContent className="border-border/60 bg-background sm:max-w-md">
+        <SheetHeader className="border-b border-border/60 px-5 py-5">
+          <SheetTitle>{t("chat.tools.title")}</SheetTitle>
+          <SheetDescription>{t("chat.tools.description")}</SheetDescription>
+        </SheetHeader>
+
+        <div className="app-scrollbar flex-1 space-y-3 overflow-y-auto px-5 py-5">
+          {items.map((item) => (
+            <div
+              className="rounded-[calc(var(--radius)+2px)] border border-border/60 bg-card px-4 py-4"
+              key={item.id}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    {item.category === "read" ? <FileTextIcon /> : <WrenchIcon />}
+                    <span>{item.name}</span>
+                  </div>
+                  <p className="text-sm leading-6 text-muted-foreground">{item.description}</p>
+                  {!item.enabled && item.reason ? (
+                    <p className="text-sm text-muted-foreground">{item.reason}</p>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col items-end gap-2">
+                  <span
+                    className={cn(
+                      "rounded-full px-2.5 py-1 text-xs font-medium",
+                      item.enabled
+                        ? "bg-primary/12 text-primary"
+                        : "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    {item.enabled ? t("chat.tools.enabled") : t("chat.tools.blocked")}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {item.category === "read"
+                      ? t("chat.tools.readCategory")
+                      : t("chat.tools.execCategory")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
@@ -195,7 +289,11 @@ export function ChatScreen({ t }: ChatScreenProps) {
   const [modelOptions, setModelOptions] = useState<ChatModelOption[]>([]);
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [streamingAssistant, setStreamingAssistant] = useState("");
+  const [toolCatalog, setToolCatalog] = useState<ToolCatalogItem[]>([]);
+  const [toolCatalogError, setToolCatalogError] = useState<string | null>(null);
   const [toolItems, setToolItems] = useState<ToolItem[]>([]);
+  const [toolSheetOpen, setToolSheetOpen] = useState(false);
+  const [toolExpandedMap, setToolExpandedMap] = useState<Record<string, boolean>>({});
 
   const sessionOptions = useMemo(
     () => sessions.map((session) => ({ label: session.title, value: session.id })),
@@ -209,6 +307,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
   useEffect(() => {
     void loadSessions(true);
     void loadChatModels();
+    void loadTools();
   }, []);
 
   useEffect(() => {
@@ -250,6 +349,16 @@ export function ChatScreen({ t }: ChatScreenProps) {
       setError(loadError instanceof Error ? loadError.message : t("chat.errors.load"));
     } finally {
       setIsLoadingModels(false);
+    }
+  }
+
+  async function loadTools() {
+    try {
+      const response = await listTools();
+      setToolCatalog(response.items);
+      setToolCatalogError(null);
+    } catch {
+      setToolCatalogError(t("chat.errors.tools"));
     }
   }
 
@@ -354,14 +463,32 @@ export function ChatScreen({ t }: ChatScreenProps) {
     }
 
     if (event.event === "tool_started") {
-      setToolItems((current) => [...current, event.payload]);
+      setToolItems((current) => [
+        ...current,
+        {
+          id: event.payload.id,
+          toolId: event.payload.tool_id,
+          toolName: event.payload.tool_name,
+          detail: event.payload.detail,
+          kind: event.payload.kind,
+          status: event.payload.status,
+          summary: event.payload.summary,
+        },
+      ]);
+      setToolExpandedMap((current) => ({ ...current, [event.payload.id]: true }));
       return;
     }
 
     if (event.event === "tool_finished") {
       setToolItems((current) =>
         current.map((item) =>
-          item.id === event.payload.id ? { ...item, status: "completed" } : item,
+          item.id === event.payload.id
+            ? {
+                ...item,
+                status: "completed",
+                resultSummary: event.payload.result_summary,
+              }
+            : item,
         ),
       );
       return;
@@ -396,7 +523,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
         <div className="flex items-center gap-3">
           <ChatActionButton disabled={!activeSessionId || isRefreshing} icon={<RefreshIcon />} onClick={() => void loadSession(activeSessionId)} />
           <div className="h-6 w-px bg-border/60" />
-          <ChatActionButton active icon={<BrainIcon />} />
+          <ChatActionButton active={toolSheetOpen} icon={<BrainIcon />} onClick={() => setToolSheetOpen(true)} />
           <ChatActionButton icon={<ExpandIcon />} />
           <ChatActionButton destructive disabled={!isSending} icon={<StopCircleIcon />} />
         </div>
@@ -434,8 +561,25 @@ export function ChatScreen({ t }: ChatScreenProps) {
               {toolItems.length > 0 ? (
                 <div className="max-w-3xl space-y-4">
                   {toolItems.map((item) => (
-                    <ToolSummary item={item} key={item.id} t={t} />
+                    <ToolSummary
+                      expanded={toolExpandedMap[item.id] ?? true}
+                      item={item}
+                      key={item.id}
+                      onToggle={() =>
+                        setToolExpandedMap((current) => ({
+                          ...current,
+                          [item.id]: !(current[item.id] ?? true),
+                        }))
+                      }
+                      t={t}
+                    />
                   ))}
+                </div>
+              ) : null}
+
+              {!hasMessages && toolCatalogError ? (
+                <div className="rounded-[calc(var(--radius)+4px)] border border-destructive/40 bg-destructive/8 px-6 py-4 text-sm text-destructive">
+                  {toolCatalogError}
                 </div>
               ) : null}
 
@@ -500,6 +644,8 @@ export function ChatScreen({ t }: ChatScreenProps) {
           </div>
         </div>
       </div>
+
+      <ToolsSheet items={toolCatalog} onOpenChange={setToolSheetOpen} open={toolSheetOpen} t={t} />
     </div>
   );
 }

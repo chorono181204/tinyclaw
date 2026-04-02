@@ -77,10 +77,46 @@ type SessionMessagesResponse = {
 
 export type ChatStreamEvent =
   | { event: "started"; payload: { message: SessionMessage; run_id: string; session_id: string } }
-  | { event: "tool_started"; payload: { id: string; detail: string; kind: "exec" | "read"; status: "running"; summary: string } }
-  | { event: "tool_finished"; payload: { id: string; detail: string; kind: "exec" | "read"; status: "completed"; summary: string } }
+  | {
+      event: "tool_started";
+      payload: {
+        id: string;
+        tool_id: string;
+        tool_name: string;
+        detail: string;
+        kind: "exec" | "read";
+        status: "running";
+        summary: string;
+      };
+    }
+  | {
+      event: "tool_finished";
+      payload: {
+        id: string;
+        tool_id: string;
+        tool_name: string;
+        detail: string;
+        kind: "exec" | "read";
+        status: "completed";
+        summary: string;
+        result_summary?: string;
+      };
+    }
   | { event: "message_delta"; payload: { delta: string; run_id: string } }
   | { event: "done"; payload: { message: SessionMessage; model: string | null; run_id: string; session: SessionItem } };
+
+export type ToolCatalogItem = {
+  id: string;
+  name: string;
+  description: string;
+  category: "exec" | "read";
+  enabled: boolean;
+  reason: string | null;
+};
+
+type ToolCatalogResponse = {
+  items: ToolCatalogItem[];
+};
 
 export type AppSettings = {
   chat_defaults: {
@@ -161,6 +197,10 @@ export function testProviderConnection(providerId: string) {
 
 export function listSessions() {
   return request<SessionListResponse>("/sessions");
+}
+
+export function listTools() {
+  return request<ToolCatalogResponse>("/tools");
 }
 
 export function createSession(payload: { title?: string }) {

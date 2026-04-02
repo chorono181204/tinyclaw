@@ -20,6 +20,7 @@ from app.schemas.sessions import (
     SessionSendRequest,
 )
 from app.schemas.settings import ChatDefaults, RuntimeSummary, SettingsResponse, SettingsUpdateRequest
+from app.schemas.tools import ToolCatalogItem, ToolCatalogResponse
 
 __all__ = [
     "CustomProviderCreateRequest",
@@ -42,4 +43,6 @@ __all__ = [
     "SettingsResponse",
     "SettingsUpdateRequest",
     "RuntimeSummary",
+    "ToolCatalogItem",
+    "ToolCatalogResponse",
 ]

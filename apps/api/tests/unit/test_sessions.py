@@ -34,8 +34,11 @@ def test_send_streams_events_and_persists_messages(client: TestClient) -> None:
 
     assert "event: started" in body
     assert "event: tool_started" in body
+    assert "event: tool_finished" in body
     assert "event: message_delta" in body
     assert "event: done" in body
+    assert "\"tool_name\": \"Session memory\"" in body
+    assert "\"tool_name\": \"Provider completion\"" in body
 
     done_payload = body.split("event: done\ndata: ", 1)[1].split("\n\n", 1)[0]
     parsed = json.loads(done_payload)
@@ -75,5 +78,6 @@ def test_send_uses_provider_backed_completion(
         body = "".join(chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk for chunk in response.iter_text())
 
     assert "event: tool_started" in body
+    assert "\"tool_name\": \"Provider completion\"" in body
     assert "event: done" in body
     assert "Provider-backed answer" in body
