@@ -4,11 +4,22 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 import { PlusIcon, RefreshIcon } from "../../components/shell/icons";
 import {
+  getAppSettings,
+  listChatModels,
   listProviders,
   saveProviderApiKey,
   testProviderConnection,
+  updateAppSettings,
+  type ChatModelOption,
   type ProviderConnectionTestResult,
   type ProviderItem,
 } from "../../lib/api";
@@ -132,6 +143,11 @@ function ProviderCard({
 export function ProviderSettingsScreen({ t }: { t: Translator }) {
   const [customProviderDialogOpen, setCustomProviderDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [chatModelOptions, setChatModelOptions] = useState<ChatModelOption[]>([]);
+  const [selectedChatModel, setSelectedChatModel] = useState("");
+  const [settingsReadyCount, setSettingsReadyCount] = useState(0);
+  const [settingsTotalModels, setSettingsTotalModels] = useState(0);
+  const [settingsSaveState, setSettingsSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [providers, setProviders] = useState<ProviderItem[]>([]);
   const [drafts, setDrafts] = useState<DraftMap>({});
   const [saveStates, setSaveStates] = useState<SaveStateMap>({});
@@ -153,6 +169,28 @@ export function ProviderSettingsScreen({ t }: { t: Translator }) {
         setTestStates(
           Object.fromEntries(response.items.map((item) => [item.id, "idle"])) satisfies TestStateMap
         );
+      })
+      .catch(() => {
+        if (!alive) {
+          return;
+        }
+        setError(t("providers.errors.load"));
+      });
+
+    void Promise.all([getAppSettings(), listChatModels()])
+      .then(([settingsResponse, modelResponse]) => {
+        if (!alive) {
+          return;
+        }
+        setChatModelOptions(modelResponse.items);
+        setSettingsReadyCount(settingsResponse.runtime.ready_models);
+        setSettingsTotalModels(settingsResponse.runtime.total_models);
+        const providerId = settingsResponse.chat_defaults.provider_id;
+        const model = settingsResponse.chat_defaults.model;
+        const matched = modelResponse.items.find(
+          (item) => item.provider_id === providerId && item.model === model,
+        );
+        setSelectedChatModel(matched?.value ?? modelResponse.items[0]?.value ?? "");
       })
       .catch(() => {
         if (!alive) {
@@ -209,6 +247,30 @@ export function ProviderSettingsScreen({ t }: { t: Translator }) {
     }
   }
 
+  async function handleSaveRuntimeDefault() {
+    const selected = chatModelOptions.find((item) => item.value === selectedChatModel);
+    if (!selected) {
+      return;
+    }
+
+    setSettingsSaveState("saving");
+    try {
+      const response = await updateAppSettings({
+        chat_defaults: {
+          provider_id: selected.provider_id,
+          model: selected.model,
+        },
+      });
+      setSettingsReadyCount(response.runtime.ready_models);
+      setSettingsTotalModels(response.runtime.total_models);
+      setSettingsSaveState("saved");
+      window.setTimeout(() => setSettingsSaveState("idle"), 1200);
+    } catch {
+      setSettingsSaveState("idle");
+      setError(t("providers.errors.save"));
+    }
+  }
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
@@ -220,6 +282,52 @@ export function ProviderSettingsScreen({ t }: { t: Translator }) {
           {readyCount} / {providers.length} {t("providers.summary")}
         </Badge>
       </div>
+
+      <Card className="gap-0 overflow-hidden border-border/70 py-0 shadow-xs">
+        <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 py-5">
+          <div className="space-y-1">
+            <CardTitle>{t("providers.runtime.title")}</CardTitle>
+            <CardDescription>{t("providers.runtime.description")}</CardDescription>
+          </div>
+          <Badge variant="outline">
+            {settingsReadyCount} / {settingsTotalModels} {t("providers.runtime.ready")}
+          </Badge>
+        </CardHeader>
+
+        <CardContent className="border-t border-border/60 px-5 py-5">
+          <div className="grid gap-3">
+            <label className="text-sm font-medium text-foreground">
+              {t("providers.runtime.defaultModel")}
+            </label>
+            <Select onValueChange={setSelectedChatModel} value={selectedChatModel}>
+              <SelectTrigger className="h-11 rounded-[var(--radius)] border-border/60 bg-card px-4 text-sm font-medium shadow-none">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-[var(--radius)] border-border/60 bg-card">
+                {chatModelOptions.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">{t("providers.runtime.helper")}</p>
+              <Button
+                disabled={!selectedChatModel || settingsSaveState === "saving"}
+                onClick={() => void handleSaveRuntimeDefault()}
+                size="sm"
+              >
+                {settingsSaveState === "saving"
+                  ? t("providers.runtime.saving")
+                  : settingsSaveState === "saved"
+                    ? t("providers.runtime.saved")
+                    : t("providers.runtime.save")}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {error ? (
         <div className="rounded-[var(--radius)] border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">

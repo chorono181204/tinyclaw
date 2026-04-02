@@ -94,6 +94,17 @@ export const vi = {
         required: "Cần nhập tên provider và base URL.",
         create: "Chưa tạo được provider này."
       }
+    },
+    runtime: {
+      title: "Chat runtime",
+      description: "Chọn model mặc định có provider thật cho các lượt chat mới.",
+      defaultModel: "Model mặc định",
+      save: "Lưu mặc định",
+      saving: "Đang lưu...",
+      saved: "Đã lưu",
+      ready: "model đã sẵn sàng",
+      current: "Mặc định hiện tại",
+      helper: "Toolbar chat sẽ khôi phục lựa chọn này khi app được mở lại."
     }
   },
   shell: {

@@ -94,6 +94,17 @@ export const en = {
         required: "Provider name and base URL are required.",
         create: "Could not create this provider."
       }
+    },
+    runtime: {
+      title: "Chat runtime",
+      description: "Choose the default provider-backed model for new chat runs.",
+      defaultModel: "Default model",
+      save: "Save default",
+      saving: "Saving...",
+      saved: "Saved",
+      ready: "models ready",
+      current: "Current runtime default",
+      helper: "The chat toolbar will restore this selection the next time the app opens."
     }
   },
   shell: {
