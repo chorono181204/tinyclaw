@@ -27,10 +27,12 @@ import type { Translator } from "../../i18n/provider";
 import { cn } from "../../lib/cn";
 import {
   getAppSettings,
+  type ChatModelOption,
   type ChatStreamEvent,
   type SessionItem,
   type SessionMessage,
   getSession,
+  listChatModels,
   listSessions,
   sendSessionMessage,
   updateAppSettings,
@@ -47,57 +49,6 @@ type ToolItem = {
   status: "completed" | "running";
   summary: string;
 };
-
-const modelOptions = [
-  {
-    label: "claude-3-7-sonnet-latest · anthropic",
-    model: "claude-3-7-sonnet-latest",
-    providerId: "anthropic",
-    value: "anthropic:claude-3-7-sonnet-latest",
-  },
-  {
-    label: "gpt-4.1-mini · openai",
-    model: "gpt-4.1-mini",
-    providerId: "openai",
-    value: "openai:gpt-4.1-mini",
-  },
-  {
-    label: "gemini-2.5-pro · google",
-    model: "gemini-2.5-pro",
-    providerId: "google",
-    value: "google:gemini-2.5-pro",
-  },
-  {
-    label: "gpt-4.1-mini · openrouter",
-    model: "openai/gpt-4.1-mini",
-    providerId: "openrouter",
-    value: "openrouter:openai/gpt-4.1-mini",
-  },
-  {
-    label: "grok-3-mini-beta · xai",
-    model: "grok-3-mini-beta",
-    providerId: "xai",
-    value: "xai:grok-3-mini-beta",
-  },
-  {
-    label: "deepseek-chat · deepseek",
-    model: "deepseek-chat",
-    providerId: "deepseek",
-    value: "deepseek:deepseek-chat",
-  },
-  {
-    label: "llama-3.3-70b-versatile · groq",
-    model: "llama-3.3-70b-versatile",
-    providerId: "groq",
-    value: "groq:llama-3.3-70b-versatile",
-  },
-  {
-    label: "mistral-small-latest · mistral",
-    model: "mistral-small-latest",
-    providerId: "mistral",
-    value: "mistral:mistral-small-latest",
-  },
-];
 
 function ToolbarSelect({
   onValueChange,
@@ -232,14 +183,16 @@ function MessageBubble({
 }
 
 export function ChatScreen({ t }: ChatScreenProps) {
-  const [activeModel, setActiveModel] = useState(modelOptions[0].value);
+  const [activeModel, setActiveModel] = useState("");
   const [activeSessionId, setActiveSessionId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingModels, setIsLoadingModels] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<SessionMessage[]>([]);
+  const [modelOptions, setModelOptions] = useState<ChatModelOption[]>([]);
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [streamingAssistant, setStreamingAssistant] = useState("");
   const [toolItems, setToolItems] = useState<ToolItem[]>([]);
@@ -250,13 +203,20 @@ export function ChatScreen({ t }: ChatScreenProps) {
   );
   const selectedModelOption = useMemo(
     () => modelOptions.find((option) => option.value === activeModel) ?? modelOptions[0],
-    [activeModel],
+    [activeModel, modelOptions],
   );
 
   useEffect(() => {
     void loadSessions(true);
-    void loadChatDefaults();
+    void loadChatModels();
   }, []);
+
+  useEffect(() => {
+    if (modelOptions.length === 0) {
+      return;
+    }
+    void loadChatDefaults();
+  }, [modelOptions]);
 
   useEffect(() => {
     if (!activeSessionId) {
@@ -281,6 +241,18 @@ export function ChatScreen({ t }: ChatScreenProps) {
     }
   }
 
+  async function loadChatModels() {
+    try {
+      const response = await listChatModels();
+      setModelOptions(response.items);
+      setActiveModel((current) => current || response.items[0]?.value || "");
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : t("chat.errors.load"));
+    } finally {
+      setIsLoadingModels(false);
+    }
+  }
+
   async function loadChatDefaults() {
     try {
       const response = await getAppSettings();
@@ -290,13 +262,13 @@ export function ChatScreen({ t }: ChatScreenProps) {
         return;
       }
       const matched = modelOptions.find(
-        (option) => option.providerId === providerId && option.model === model,
+        (option) => option.provider_id === providerId && option.model === model,
       );
       if (matched) {
         setActiveModel(matched.value);
       }
     } catch {
-      // Keep the local default option if settings are not available yet.
+      // Keep the backend catalog default if settings are not available yet.
     }
   }
 
@@ -325,6 +297,10 @@ export function ChatScreen({ t }: ChatScreenProps) {
     if (!trimmed || !activeSessionId || isSending) {
       return;
     }
+    if (!selectedModelOption) {
+      setError(t("chat.errors.load"));
+      return;
+    }
 
     setIsSending(true);
     setError(null);
@@ -338,7 +314,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
         {
           message: trimmed,
           model: selectedModelOption.model,
-          provider_id: selectedModelOption.providerId,
+          provider_id: selectedModelOption.provider_id,
         },
         handleStreamEvent,
       );
@@ -362,7 +338,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
     try {
       await updateAppSettings({
         chat_defaults: {
-          provider_id: option.providerId,
+          provider_id: option.provider_id,
           model: option.model,
         },
       });
@@ -431,7 +407,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
         <ToolbarSelect
           onValueChange={handleModelChange}
           options={modelOptions.map((model) => ({ label: model.label, value: model.value }))}
-          value={activeModel}
+          value={activeModel || modelOptions[0]?.value || ""}
         />
       </div>
 
@@ -439,13 +415,13 @@ export function ChatScreen({ t }: ChatScreenProps) {
         <div className="app-scrollbar flex h-full flex-col overflow-y-auto">
           <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 pb-6 pt-6">
             <div className="flex flex-1 flex-col justify-end gap-6">
-              {isLoading && !hasMessages ? (
+              {(isLoading || isLoadingModels) && !hasMessages ? (
                 <div className="rounded-[calc(var(--radius)+4px)] bg-card px-6 py-5 text-sm text-muted-foreground">
                   {t("chat.states.loading")}
                 </div>
               ) : null}
 
-              {!isLoading && !hasMessages ? (
+              {!isLoading && !isLoadingModels && !hasMessages ? (
                 <div className="rounded-[calc(var(--radius)+4px)] bg-card px-6 py-5 text-sm text-muted-foreground">
                   {t("chat.states.empty")}
                 </div>
@@ -472,7 +448,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
                   <div className="mt-5 flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="font-medium text-foreground">{t("chat.mock.assistantName")}</span>
                     <span>{t("chat.states.streaming")}</span>
-                    <span>{selectedModelOption.label}</span>
+                    <span>{selectedModelOption?.label}</span>
                   </div>
                 </div>
               ) : null}
@@ -511,7 +487,11 @@ export function ChatScreen({ t }: ChatScreenProps) {
                 <span className="text-xs text-muted-foreground">
                   {isSending ? t("chat.states.streaming") : t("chat.composer.helper")}
                 </span>
-                <Button className="min-w-[118px]" disabled={!message.trim() || isSending || !activeSessionId} onClick={handleSend}>
+                <Button
+                  className="min-w-[118px]"
+                  disabled={!message.trim() || isSending || !activeSessionId || !selectedModelOption}
+                  onClick={handleSend}
+                >
                   <SendIcon />
                   {isSending ? t("chat.composer.sending") : t("chat.composer.send")}
                 </Button>

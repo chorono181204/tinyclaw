@@ -18,6 +18,10 @@ type ProviderListResponse = {
   items: ProviderItem[];
 };
 
+type ChatModelCatalogResponse = {
+  items: ChatModelOption[];
+};
+
 type ProviderUpdateResponse = {
   item: ProviderItem;
 };
@@ -30,6 +34,16 @@ export type ProviderConnectionTestResult = {
   ok: boolean;
   message: string;
   status_code: number | null;
+};
+
+export type ChatModelOption = {
+  value: string;
+  label: string;
+  provider_id: string;
+  provider_name: string;
+  model: string;
+  requires_api_key: boolean;
+  ready: boolean;
 };
 
 export type SessionItem = {
@@ -93,6 +107,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export function listProviders() {
   return request<ProviderListResponse>("/providers");
+}
+
+export function listChatModels() {
+  return request<ChatModelCatalogResponse>("/providers/models");
 }
 
 export function getAppSettings() {
