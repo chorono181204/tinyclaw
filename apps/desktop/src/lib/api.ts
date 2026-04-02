@@ -123,6 +123,11 @@ export type AppSettings = {
     provider_id: string | null;
     model: string | null;
   };
+  onboarding: {
+    complete: boolean;
+    needs_provider_setup: boolean;
+    needs_default_model: boolean;
+  };
   runtime: {
     ready_models: number;
     total_models: number;

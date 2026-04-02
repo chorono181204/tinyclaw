@@ -8,12 +8,12 @@ export function AppShell({
   sidebar,
 }: {
   children: ReactNode;
-  sidebar: ReactNode;
+  sidebar?: ReactNode;
 }) {
   return (
     <main className="h-screen overflow-hidden bg-background text-foreground">
       <div className="flex h-full gap-2 bg-muted/20 p-2">
-        {sidebar}
+        {sidebar ?? null}
         {children}
       </div>
     </main>
