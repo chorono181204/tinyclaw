@@ -60,6 +60,49 @@ export const vi = {
       send: "Chưa gửi được tin nhắn này."
     }
   },
+  onboarding: {
+    badge: "Thiết lập lần đầu",
+    title: "Kết nối một provider và chọn model mặc định cho Ducky",
+    description:
+      "Flow này đi theo tinh thần wizard gọn của OpenClaw, nhưng giữ mọi thứ cục bộ ngay trong app desktop.",
+    loading: "Đang chuẩn bị thiết lập lần đầu...",
+    providerHelper: "Lưu hoặc test provider tại đây, rồi chọn model mặc định mà Ducky sẽ dùng.",
+    optionalKey: "Provider này có thể dùng mà không cần lưu API key, nên bạn có thể đi thẳng tới bước chọn model.",
+    modelPlaceholder: "Chọn model",
+    steps: {
+      step1: {
+        label: "Bước 1",
+        body: "Chọn provider mà bạn muốn Ducky dùng trước."
+      },
+      step2: {
+        label: "Bước 2",
+        body: "Lưu và test API key để chắc runtime đã sẵn sàng thật."
+      },
+      step3: {
+        label: "Bước 3",
+        body: "Chọn model mặc định và hoàn tất setup để mở khóa màn chat."
+      }
+    },
+    runtime: {
+      title: "Trạng thái runtime",
+      description: "Ducky kiểm tra cùng một trạng thái provider và model mà màn chat sử dụng.",
+      providers: "Provider sẵn sàng",
+      models: "Model sẵn sàng",
+      current: "Trạng thái thiết lập hiện tại",
+      readyState: "Setup này đã hoàn tất. Ducky có thể mở màn chat với model mặc định có provider thật.",
+      pendingState: "Hãy hoàn tất một lựa chọn model có provider thật trước khi màn chat trở thành điểm vào mặc định."
+    },
+    actions: {
+      finish: "Hoàn tất thiết lập",
+      openConfig: "Mở cấu hình đầy đủ"
+    },
+    errors: {
+      load: "Chưa tải được thiết lập lần đầu.",
+      save: "Chưa lưu được bước thiết lập này.",
+      test: "Chưa test được provider này.",
+      defaultModel: "Hãy chọn provider và model trước khi hoàn tất thiết lập."
+    }
+  },
   providers: {
     title: "API key nhà cung cấp",
     description: "Kết nối các nhà cung cấp model chính thống mà Ducky sẽ dùng.",

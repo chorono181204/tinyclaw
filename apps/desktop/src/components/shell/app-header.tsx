@@ -47,14 +47,18 @@ export function AppHeader({
   onNewTask,
   onToggleSidebar,
   onThemeChange,
+  showNewTask = true,
+  showSidebarToggle = true,
   theme,
   t
 }: {
   locale: Locale;
   onLocaleChange: (locale: Locale) => void;
-  onNewTask: () => void;
+  onNewTask?: () => void;
   onToggleSidebar: () => void;
   onThemeChange: (theme: ThemeMode) => void;
+  showNewTask?: boolean;
+  showSidebarToggle?: boolean;
   theme: ThemeMode;
   t: Translator;
 }) {
@@ -105,9 +109,11 @@ export function AppHeader({
       <div className="px-6 py-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center">
-            <Button onClick={onToggleSidebar} size="icon" variant="outline">
-              <MenuIcon />
-            </Button>
+            {showSidebarToggle ? (
+              <Button onClick={onToggleSidebar} size="icon" variant="outline">
+                <MenuIcon />
+              </Button>
+            ) : null}
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-3">
@@ -159,7 +165,9 @@ export function AppHeader({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button onClick={onNewTask}>{t("shell.actions.newTask")}</Button>
+            {showNewTask && onNewTask ? (
+              <Button onClick={onNewTask}>{t("shell.actions.newTask")}</Button>
+            ) : null}
           </div>
         </div>
       </div>

@@ -19,7 +19,13 @@ from app.schemas.sessions import (
     SessionMessagesResponse,
     SessionSendRequest,
 )
-from app.schemas.settings import ChatDefaults, RuntimeSummary, SettingsResponse, SettingsUpdateRequest
+from app.schemas.settings import (
+    ChatDefaults,
+    OnboardingSummary,
+    RuntimeSummary,
+    SettingsResponse,
+    SettingsUpdateRequest,
+)
 from app.schemas.tools import ToolCatalogItem, ToolCatalogResponse
 
 __all__ = [
@@ -40,6 +46,7 @@ __all__ = [
     "SessionMessagesResponse",
     "SessionSendRequest",
     "ChatDefaults",
+    "OnboardingSummary",
     "SettingsResponse",
     "SettingsUpdateRequest",
     "RuntimeSummary",

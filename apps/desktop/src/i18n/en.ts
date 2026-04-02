@@ -60,6 +60,49 @@ export const en = {
       send: "Could not send this message."
     }
   },
+  onboarding: {
+    badge: "First-run setup",
+    title: "Connect one provider and pick the default model for Ducky",
+    description:
+      "This setup follows the lightweight OpenClaw-style wizard shape, but keeps everything local and inside the desktop app.",
+    loading: "Preparing first-run setup...",
+    providerHelper: "Save or test the provider here, then choose the model Ducky should use by default.",
+    optionalKey: "This provider can be used without a stored API key, so you can move straight to model selection.",
+    modelPlaceholder: "Choose a model",
+    steps: {
+      step1: {
+        label: "Step 1",
+        body: "Choose the provider you want Ducky to use first."
+      },
+      step2: {
+        label: "Step 2",
+        body: "Save and test the API key so the runtime is really ready."
+      },
+      step3: {
+        label: "Step 3",
+        body: "Pick the default model and finish setup to unlock chat."
+      }
+    },
+    runtime: {
+      title: "Runtime readiness",
+      description: "Ducky checks the same provider and model state that the chat workspace uses.",
+      providers: "Ready providers",
+      models: "Ready models",
+      current: "Current setup state",
+      readyState: "This setup is complete. Ducky can open the chat workspace with a provider-backed default.",
+      pendingState: "Finish one provider-backed model selection before the chat workspace becomes the default entry point."
+    },
+    actions: {
+      finish: "Finish setup",
+      openConfig: "Open full config"
+    },
+    errors: {
+      load: "Could not load the first-run setup right now.",
+      save: "Could not save this setup step.",
+      test: "Could not test this provider right now.",
+      defaultModel: "Choose a provider and model before finishing setup."
+    }
+  },
   providers: {
     title: "Provider API keys",
     description: "Connect the official model providers Ducky should use.",
