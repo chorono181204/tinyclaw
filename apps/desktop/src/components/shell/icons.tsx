@@ -360,3 +360,14 @@ export function CheckIcon() {
     </svg>
   );
 }
+
+export function TrashIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M3 6h18" strokeLinecap="round" />
+      <path d="M8 6V4.75A1.75 1.75 0 0 1 9.75 3h4.5A1.75 1.75 0 0 1 16 4.75V6" strokeLinecap="round" />
+      <path d="M6.25 6 7 19.25A1.75 1.75 0 0 0 8.75 21h6.5A1.75 1.75 0 0 0 17 19.25L17.75 6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 10.25v6.5M14 10.25v6.5" strokeLinecap="round" />
+    </svg>
+  );
+}

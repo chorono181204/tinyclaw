@@ -25,6 +25,34 @@ def test_create_session_persists_entry(client: TestClient) -> None:
     assert any(entry["id"] == item["id"] for entry in list_response.json()["items"])
 
 
+def test_archive_and_list_sessions(client: TestClient) -> None:
+    created = client.post("/sessions", json={"title": "archive me"}).json()["item"]
+
+    archive_response = client.patch(f"/sessions/{created['id']}", json={"archived": True})
+    assert archive_response.status_code == 200
+    assert archive_response.json()["item"]["archived_at"] is not None
+
+    active_response = client.get("/sessions")
+    assert all(item["id"] != created["id"] for item in active_response.json()["items"])
+
+    all_response = client.get("/sessions", params={"include_archived": "true"})
+    assert any(item["id"] == created["id"] for item in all_response.json()["items"])
+
+
+def test_rename_and_delete_session(client: TestClient) -> None:
+    created = client.post("/sessions", json={"title": "draft"}).json()["item"]
+
+    rename_response = client.patch(f"/sessions/{created['id']}", json={"title": "review notes"})
+    assert rename_response.status_code == 200
+    assert rename_response.json()["item"]["title"] == "review notes"
+
+    delete_response = client.delete(f"/sessions/{created['id']}")
+    assert delete_response.status_code == 204
+
+    list_response = client.get("/sessions", params={"include_archived": "true"})
+    assert all(item["id"] != created["id"] for item in list_response.json()["items"])
+
+
 def test_send_streams_events_and_persists_messages(client: TestClient) -> None:
     client.get("/sessions")
 

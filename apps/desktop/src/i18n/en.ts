@@ -103,6 +103,47 @@ export const en = {
       defaultModel: "Choose a provider and model before finishing setup."
     }
   },
+  sessions: {
+    title: "Sessions",
+    description: "Review, rename, archive, and reopen your local conversation history.",
+    detailDescription: "Keep a session tidy here, then jump back into chat when you want to continue.",
+    createPlaceholder: "New session title",
+    previewFallback: "No messages yet in this session.",
+    current: "Current",
+    messages: "messages",
+    noSelection: "Select a session",
+    noSelectionDescription: "Choose a session from the list to inspect its transcript and actions.",
+    userLabel: "You",
+    assistantLabel: "Assistant",
+    tabs: {
+      active: "Active",
+      archived: "Archived"
+    },
+    actions: {
+      create: "Create session",
+      creating: "Creating...",
+      openChat: "Open in chat",
+      archive: "Archive",
+      restore: "Restore",
+      rename: "Rename",
+      saving: "Saving...",
+      saved: "Saved"
+    },
+    states: {
+      loading: "Loading sessions...",
+      empty: "No active sessions yet.",
+      emptyArchived: "No archived sessions yet.",
+      emptyMessages: "This session does not have any messages yet."
+    },
+    errors: {
+      load: "Could not load sessions right now.",
+      detail: "Could not load this session transcript.",
+      create: "Could not create a new session.",
+      rename: "Could not rename this session.",
+      archive: "Could not update the archive state for this session.",
+      delete: "Could not delete this session."
+    }
+  },
   providers: {
     title: "Provider API keys",
     description: "Connect the official model providers Ducky should use.",

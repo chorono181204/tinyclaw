@@ -51,6 +51,7 @@ export type SessionItem = {
   title: string;
   created_at: string;
   updated_at: string;
+  archived_at: string | null;
   last_message_preview: string | null;
   message_count: number;
 };
@@ -67,6 +68,10 @@ type SessionListResponse = {
 };
 
 type SessionCreateResponse = {
+  item: SessionItem;
+};
+
+type SessionUpdateResponse = {
   item: SessionItem;
 };
 
@@ -200,8 +205,9 @@ export function testProviderConnection(providerId: string) {
   });
 }
 
-export function listSessions() {
-  return request<SessionListResponse>("/sessions");
+export function listSessions(options?: { includeArchived?: boolean }) {
+  const search = options?.includeArchived ? "?include_archived=true" : "";
+  return request<SessionListResponse>(`/sessions${search}`);
 }
 
 export function listTools() {
@@ -217,6 +223,26 @@ export function createSession(payload: { title?: string }) {
 
 export function getSession(sessionId: string) {
   return request<SessionMessagesResponse>(`/sessions/${sessionId}`);
+}
+
+export function updateSession(
+  sessionId: string,
+  payload: { archived?: boolean; title?: string },
+) {
+  return request<SessionUpdateResponse>(`/sessions/${sessionId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteSession(sessionId: string) {
+  const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
 }
 
 export async function sendSessionMessage(

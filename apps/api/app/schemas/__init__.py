@@ -18,6 +18,8 @@ from app.schemas.sessions import (
     SessionMessage,
     SessionMessagesResponse,
     SessionSendRequest,
+    SessionUpdateRequest,
+    SessionUpdateResponse,
 )
 from app.schemas.settings import (
     ChatDefaults,
@@ -45,6 +47,8 @@ __all__ = [
     "SessionMessage",
     "SessionMessagesResponse",
     "SessionSendRequest",
+    "SessionUpdateRequest",
+    "SessionUpdateResponse",
     "ChatDefaults",
     "OnboardingSummary",
     "SettingsResponse",

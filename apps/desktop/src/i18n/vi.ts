@@ -103,6 +103,47 @@ export const vi = {
       defaultModel: "Hãy chọn provider và model trước khi hoàn tất thiết lập."
     }
   },
+  sessions: {
+    title: "Phiên chat",
+    description: "Xem lại, đổi tên, lưu trữ và mở lại lịch sử hội thoại cục bộ.",
+    detailDescription: "Sắp xếp phiên tại đây rồi quay lại chat khi bạn muốn tiếp tục.",
+    createPlaceholder: "Tên phiên mới",
+    previewFallback: "Phiên này chưa có tin nhắn nào.",
+    current: "Hiện tại",
+    messages: "tin nhắn",
+    noSelection: "Chọn một phiên",
+    noSelectionDescription: "Chọn một phiên ở danh sách bên trái để xem transcript và thao tác.",
+    userLabel: "Bạn",
+    assistantLabel: "Assistant",
+    tabs: {
+      active: "Đang hoạt động",
+      archived: "Đã lưu trữ"
+    },
+    actions: {
+      create: "Tạo phiên",
+      creating: "Đang tạo...",
+      openChat: "Mở trong chat",
+      archive: "Lưu trữ",
+      restore: "Khôi phục",
+      rename: "Đổi tên",
+      saving: "Đang lưu...",
+      saved: "Đã lưu"
+    },
+    states: {
+      loading: "Đang tải các phiên...",
+      empty: "Chưa có phiên hoạt động nào.",
+      emptyArchived: "Chưa có phiên lưu trữ nào.",
+      emptyMessages: "Phiên này chưa có tin nhắn nào."
+    },
+    errors: {
+      load: "Chưa tải được danh sách phiên.",
+      detail: "Chưa tải được transcript của phiên này.",
+      create: "Chưa tạo được phiên mới.",
+      rename: "Chưa đổi tên được phiên này.",
+      archive: "Chưa cập nhật được trạng thái lưu trữ của phiên này.",
+      delete: "Chưa xóa được phiên này."
+    }
+  },
   providers: {
     title: "API key nhà cung cấp",
     description: "Kết nối các nhà cung cấp model chính thống mà Ducky sẽ dùng.",

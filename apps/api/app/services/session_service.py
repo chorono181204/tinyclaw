@@ -34,19 +34,22 @@ def _session_to_schema(session: dict[str, Any]) -> SessionItem:
         title=session["title"],
         created_at=session["created_at"],
         updated_at=session["updated_at"],
+        archived_at=session.get("archived_at"),
         last_message_preview=_truncate(last_message) if last_message else None,
         message_count=len(messages),
     )
 
 
 def _ensure_default_session(store: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
-    if store["sessions"]:
-        return store["sessions"][0]
+    existing_main = next((item for item in store["sessions"] if item["id"] == "main"), None)
+    if existing_main is not None:
+        return existing_main
     session = {
         "id": "main",
         "title": "main",
         "created_at": _now_iso(),
         "updated_at": _now_iso(),
+        "archived_at": None,
         "messages": [],
     }
     store["sessions"].append(session)
@@ -54,10 +57,13 @@ def _ensure_default_session(store: dict[str, list[dict[str, Any]]]) -> dict[str,
     return session
 
 
-def list_sessions() -> list[SessionItem]:
+def list_sessions(include_archived: bool = False) -> list[SessionItem]:
     store = read_store()
     _ensure_default_session(store)
-    sessions = sorted(store["sessions"], key=lambda item: item["updated_at"], reverse=True)
+    sessions = store["sessions"]
+    if not include_archived:
+        sessions = [item for item in sessions if item.get("archived_at") is None]
+    sessions = sorted(sessions, key=lambda item: item["updated_at"], reverse=True)
     return [_session_to_schema(session) for session in sessions]
 
 
@@ -69,6 +75,7 @@ def create_session(title: str | None) -> SessionItem:
         "title": name,
         "created_at": _now_iso(),
         "updated_at": _now_iso(),
+        "archived_at": None,
         "messages": [],
     }
     store["sessions"].append(session)
@@ -84,6 +91,42 @@ def get_session_with_messages(session_id: str) -> tuple[SessionItem, list[Sessio
         raise KeyError(session_id)
     messages = [_message_to_schema(message) for message in session.get("messages", [])]
     return _session_to_schema(session), messages
+
+
+def update_session(
+    session_id: str,
+    *,
+    title: str | None = None,
+    archived: bool | None = None,
+) -> SessionItem:
+    store = read_store()
+    _ensure_default_session(store)
+    session = next((item for item in store["sessions"] if item["id"] == session_id), None)
+    if session is None:
+        raise KeyError(session_id)
+
+    if title is not None:
+        session["title"] = title.strip() or session["title"]
+
+    if archived is not None:
+        session["archived_at"] = _now_iso() if archived else None
+
+    session["updated_at"] = _now_iso()
+    write_store(store)
+    return _session_to_schema(session)
+
+
+def delete_session(session_id: str) -> None:
+    if session_id == "main":
+        raise ValueError("main")
+
+    store = read_store()
+    _ensure_default_session(store)
+    original_count = len(store["sessions"])
+    store["sessions"] = [item for item in store["sessions"] if item["id"] != session_id]
+    if len(store["sessions"]) == original_count:
+        raise KeyError(session_id)
+    write_store(store)
 
 
 def stream_session_reply(

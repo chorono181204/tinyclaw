@@ -48,6 +48,8 @@ import {
 } from "../../lib/api";
 
 type ChatScreenProps = {
+  initialSessionId?: string | null;
+  onSessionChange?: (sessionId: string) => void;
   t: Translator;
 };
 
@@ -276,7 +278,7 @@ function MessageBubble({
   );
 }
 
-export function ChatScreen({ t }: ChatScreenProps) {
+export function ChatScreen({ initialSessionId, onSessionChange, t }: ChatScreenProps) {
   const [activeModel, setActiveModel] = useState("");
   const [activeSessionId, setActiveSessionId] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -311,6 +313,12 @@ export function ChatScreen({ t }: ChatScreenProps) {
   }, []);
 
   useEffect(() => {
+    if (initialSessionId) {
+      setActiveSessionId(initialSessionId);
+    }
+  }, [initialSessionId]);
+
+  useEffect(() => {
     if (modelOptions.length === 0) {
       return;
     }
@@ -330,8 +338,17 @@ export function ChatScreen({ t }: ChatScreenProps) {
     try {
       const response = await listSessions();
       setSessions(response.items);
-      if (response.items.length > 0 && (setDefault || !activeSessionId)) {
-        setActiveSessionId((current) => current || response.items[0].id);
+      if (response.items.length > 0) {
+        const matchedInitial = initialSessionId
+          ? response.items.find((item) => item.id === initialSessionId)
+          : null;
+        if (matchedInitial) {
+          setActiveSessionId(matchedInitial.id);
+          onSessionChange?.(matchedInitial.id);
+        } else if (setDefault || !activeSessionId) {
+          setActiveSessionId((current) => current || response.items[0].id);
+          onSessionChange?.(response.items[0].id);
+        }
       }
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : t("chat.errors.load"));
@@ -389,6 +406,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
     try {
       const response = await getSession(sessionId);
       setMessages(response.messages);
+      onSessionChange?.(response.session.id);
       setSessions((current) =>
         current.map((item) => (item.id === response.session.id ? response.session : item)),
       );
@@ -459,6 +477,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
   function handleStreamEvent(event: ChatStreamEvent) {
     if (event.event === "started") {
       setMessages((current) => [...current, event.payload.message]);
+      onSessionChange?.(event.payload.session_id);
       return;
     }
 
@@ -501,6 +520,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
 
     if (event.event === "done") {
       setMessages((current) => [...current, event.payload.message]);
+      onSessionChange?.(event.payload.session.id);
       setSessions((current) =>
         current.map((item) => (item.id === event.payload.session.id ? event.payload.session : item)),
       );
@@ -530,7 +550,14 @@ export function ChatScreen({ t }: ChatScreenProps) {
       </div>
 
       <div className="flex items-center gap-4 border-b border-border/60 px-6 py-4">
-        <ToolbarSelect onValueChange={setActiveSessionId} options={sessionOptions} value={activeSessionId || ""} />
+        <ToolbarSelect
+          onValueChange={(value) => {
+            setActiveSessionId(value);
+            onSessionChange?.(value);
+          }}
+          options={sessionOptions}
+          value={activeSessionId || ""}
+        />
         <ToolbarSelect
           onValueChange={handleModelChange}
           options={modelOptions.map((model) => ({ label: model.label, value: model.value }))}
