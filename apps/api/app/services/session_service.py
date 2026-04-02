@@ -8,6 +8,7 @@ from uuid import uuid4
 from app.repositories.session_repository import read_store, write_store
 from app.schemas.sessions import SessionItem, SessionMessage
 from app.services.model_runtime_service import complete_chat
+from app.services.tool_service import list_tool_catalog
 
 
 def _now_iso() -> str:
@@ -117,17 +118,51 @@ def stream_session_reply(
     ]
     conversation_messages.append({"role": "user", "content": user_message["content"]})
 
-    tool_id = f"tool-{uuid4().hex[:10]}"
-    provider_label = provider_id or "provider"
-    tool_summary = "1 tool exec"
-    tool_detail = f"with {provider_label} chat completion request"
+    tool_catalog = {item.id: item for item in list_tool_catalog()}
+
+    memory_tool_id = f"tool-{uuid4().hex[:10]}"
+    memory_tool = tool_catalog["session-memory"]
+    memory_detail = f"with {max(len(conversation_messages) - 1, 0)} earlier messages in session context"
     yield _sse(
         "tool_started",
         {
-            "id": tool_id,
-            "detail": tool_detail,
-            "kind": "exec",
-            "summary": tool_summary,
+            "id": memory_tool_id,
+            "tool_id": memory_tool.id,
+            "tool_name": memory_tool.name,
+            "detail": memory_detail,
+            "kind": memory_tool.category,
+            "summary": "1 tool read",
+            "status": "running",
+        },
+    )
+    yield _sse(
+        "tool_finished",
+        {
+            "id": memory_tool_id,
+            "tool_id": memory_tool.id,
+            "tool_name": memory_tool.name,
+            "detail": memory_detail,
+            "kind": memory_tool.category,
+            "summary": "1 tool read",
+            "status": "completed",
+            "result_summary": "Prepared local session context",
+        },
+    )
+
+    provider_tool_id = f"tool-{uuid4().hex[:10]}"
+    provider_tool = tool_catalog["provider-completion"]
+    provider_label = provider_id or "provider"
+    runtime_model = model or "default model"
+    provider_detail = f"with {provider_label} completion request for {runtime_model}"
+    yield _sse(
+        "tool_started",
+        {
+            "id": provider_tool_id,
+            "tool_id": provider_tool.id,
+            "tool_name": provider_tool.name,
+            "detail": provider_detail,
+            "kind": provider_tool.category,
+            "summary": "1 tool exec",
             "status": "running",
         },
     )
@@ -141,11 +176,14 @@ def stream_session_reply(
     yield _sse(
         "tool_finished",
         {
-            "id": tool_id,
-            "detail": tool_detail,
-            "kind": "exec",
-            "summary": tool_summary,
+            "id": provider_tool_id,
+            "tool_id": provider_tool.id,
+            "tool_name": provider_tool.name,
+            "detail": provider_detail,
+            "kind": provider_tool.category,
+            "summary": "1 tool exec",
             "status": "completed",
+            "result_summary": f"Returned {len(assistant_text)} characters",
         },
     )
 

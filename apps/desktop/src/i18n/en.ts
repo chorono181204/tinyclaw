@@ -6,10 +6,18 @@ export const en = {
       review: "review"
     },
     tools: {
+      title: "Tools",
+      description: "Review which local tools are active for chat runs right now.",
+      enabled: "Enabled",
+      blocked: "Blocked",
+      result: "Result",
+      readCategory: "Read",
+      execCategory: "Exec",
       completed: "Completed",
       running: "Running",
       execLabel: "exec",
       readLabel: "read",
+      empty: "Tool activity will appear here during a chat run.",
       execSummary: "1 tool exec",
       readSummary: "1 tool read",
       execDetail: "with list files in skills, `ls skills`",
@@ -48,6 +56,7 @@ export const en = {
     },
     errors: {
       load: "Could not load this chat session.",
+      tools: "Could not load the tool catalog right now.",
       send: "Could not send this message."
     }
   },
