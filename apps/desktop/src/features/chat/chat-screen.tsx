@@ -48,10 +48,22 @@ type ToolItem = {
 
 const modelOptions = [
   {
+    label: "claude-3-7-sonnet-latest · anthropic",
+    model: "claude-3-7-sonnet-latest",
+    providerId: "anthropic",
+    value: "anthropic:claude-3-7-sonnet-latest",
+  },
+  {
     label: "gpt-4.1-mini · openai",
     model: "gpt-4.1-mini",
     providerId: "openai",
     value: "openai:gpt-4.1-mini",
+  },
+  {
+    label: "gemini-2.5-pro · google",
+    model: "gemini-2.5-pro",
+    providerId: "google",
+    value: "google:gemini-2.5-pro",
   },
   {
     label: "gpt-4.1-mini · openrouter",
