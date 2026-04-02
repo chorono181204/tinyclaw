@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 import httpx
 
 from app.core.config import get_settings
-from app.schemas.providers import ProviderConnectionTestResponse, ProviderItem
+from app.schemas.providers import ChatModelOption, ProviderConnectionTestResponse, ProviderItem
 
 BUILTIN_PROVIDERS = [
     {
@@ -193,6 +193,17 @@ BUILTIN_PROVIDERS = [
     },
 ]
 
+SUPPORTED_CHAT_MODELS = [
+    {"provider_id": "anthropic", "model": "claude-3-7-sonnet-latest"},
+    {"provider_id": "openai", "model": "gpt-4.1-mini"},
+    {"provider_id": "google", "model": "gemini-2.5-pro"},
+    {"provider_id": "openrouter", "model": "openai/gpt-4.1-mini"},
+    {"provider_id": "xai", "model": "grok-3-mini-beta"},
+    {"provider_id": "deepseek", "model": "deepseek-chat"},
+    {"provider_id": "groq", "model": "llama-3.3-70b-versatile"},
+    {"provider_id": "mistral", "model": "mistral-small-latest"},
+]
+
 
 def _slugify(value: str) -> str:
     normalized = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
@@ -263,6 +274,27 @@ def list_provider_items() -> list[ProviderItem]:
         items.append(_provider_to_item(provider, api_key, is_custom=True))
 
     return items
+
+
+def list_chat_model_options() -> list[ChatModelOption]:
+    provider_items = {item.id: item for item in list_provider_items()}
+    options: list[ChatModelOption] = []
+    for definition in SUPPORTED_CHAT_MODELS:
+        provider = provider_items.get(definition["provider_id"])
+        if provider is None:
+            continue
+        options.append(
+            ChatModelOption(
+                value=f"{provider.id}:{definition['model']}",
+                label=f"{definition['model']} · {provider.id}",
+                provider_id=provider.id,
+                provider_name=provider.name,
+                model=definition["model"],
+                requires_api_key=provider.requires_api_key,
+                ready=(not provider.requires_api_key) or provider.has_api_key,
+            )
+        )
+    return options
 
 
 def update_provider_api_key(provider_id: str, api_key: str) -> ProviderItem:

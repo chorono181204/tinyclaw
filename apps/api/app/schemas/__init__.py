@@ -1,5 +1,7 @@
 """Schema package."""
 from app.schemas.providers import (
+    ChatModelCatalogResponse,
+    ChatModelOption,
     CustomProviderCreateRequest,
     CustomProviderCreateResponse,
     ProviderConnectionTestResponse,
@@ -23,6 +25,8 @@ __all__ = [
     "CustomProviderCreateRequest",
     "CustomProviderCreateResponse",
     "ProviderConnectionTestResponse",
+    "ChatModelOption",
+    "ChatModelCatalogResponse",
     "ProviderItem",
     "ProviderListResponse",
     "ProviderUpdateRequest",

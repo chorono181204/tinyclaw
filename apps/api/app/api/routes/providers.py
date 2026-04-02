@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.providers import (
+    ChatModelCatalogResponse,
     CustomProviderCreateRequest,
     CustomProviderCreateResponse,
     ProviderConnectionTestResponse,
@@ -10,6 +11,7 @@ from app.schemas.providers import (
 )
 from app.services.provider_service import (
     create_custom_provider,
+    list_chat_model_options,
     list_provider_items,
     test_provider_connection,
     update_provider_api_key,
@@ -21,6 +23,11 @@ router = APIRouter()
 @router.get("", response_model=ProviderListResponse)
 def list_providers() -> ProviderListResponse:
     return ProviderListResponse(items=list_provider_items())
+
+
+@router.get("/models", response_model=ChatModelCatalogResponse)
+def list_chat_models() -> ChatModelCatalogResponse:
+    return ChatModelCatalogResponse(items=list_chat_model_options())
 
 
 @router.post("", response_model=CustomProviderCreateResponse)

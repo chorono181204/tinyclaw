@@ -41,3 +41,17 @@ class ProviderConnectionTestResponse(BaseModel):
     ok: bool
     message: str
     status_code: int | None = None
+
+
+class ChatModelOption(BaseModel):
+    value: str
+    label: str
+    provider_id: str
+    provider_name: str
+    model: str
+    requires_api_key: bool = True
+    ready: bool = False
+
+
+class ChatModelCatalogResponse(BaseModel):
+    items: list[ChatModelOption]

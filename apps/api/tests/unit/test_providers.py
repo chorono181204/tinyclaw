@@ -13,6 +13,16 @@ def test_list_providers_returns_builtins(client: TestClient) -> None:
     assert payload["items"][0]["id"] == "anthropic"
 
 
+def test_list_chat_models_returns_supported_catalog(client: TestClient) -> None:
+    response = client.get("/providers/models")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload["items"]) == 8
+    assert payload["items"][0]["provider_id"] == "anthropic"
+    assert payload["items"][0]["model"] == "claude-3-7-sonnet-latest"
+
+
 def test_update_provider_persists_api_key(client: TestClient) -> None:
     save_response = client.put("/providers/openai", json={"api_key": "sk-test-12345678"})
 
