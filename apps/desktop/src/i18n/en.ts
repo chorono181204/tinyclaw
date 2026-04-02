@@ -1,4 +1,98 @@
 export const en = {
+  chat: {
+    session: {
+      main: "main",
+      workspace: "workspace",
+      review: "review"
+    },
+    tools: {
+      completed: "Completed",
+      running: "Running",
+      execLabel: "exec",
+      readLabel: "read",
+      execSummary: "1 tool exec",
+      readSummary: "1 tool read",
+      execDetail: "with list files in skills, `ls skills`",
+      readDetail: "with from skills/trello/SKILL.md",
+      envDetail:
+        "with if [ -n \"$TRELLO_API_KEY\" ] && [ -n \"$TRELLO_TOKEN\" ]; then echo ready; else echo missing; fi"
+    },
+    mock: {
+      userPrompt: "List all of my Trello boards",
+      userLabel: "You",
+      assistantName: "Assistant",
+      assistantBody: {
+        first:
+          "Hi! To list your Trello boards, Ducky still needs a valid API key and token for the Trello skill.",
+        second:
+          "Right now those environment values are missing, so the tool run stopped before it could call the API.",
+        third:
+          "You can add the credentials in settings, or point me at a saved config file and I can continue from there."
+      },
+      assistantMeta: {
+        time: "9:08 AM",
+        usage: "10.4k ↓611 R212.9k",
+        model: "gpt-5.1-codex"
+      }
+    },
+    composer: {
+      placeholder: "Message Assistant (Enter to send)",
+      helper: "Files and voice input will connect here next.",
+      send: "Send",
+      sending: "Sending..."
+    },
+    states: {
+      loading: "Loading this chat session...",
+      empty: "This session is empty. Send the first message to start a local run.",
+      streaming: "Streaming reply..."
+    },
+    errors: {
+      load: "Could not load this chat session.",
+      send: "Could not send this message."
+    }
+  },
+  providers: {
+    title: "Provider API keys",
+    description: "Connect the official model providers Ducky should use.",
+    summary: "providers ready",
+    status: {
+      ready: "Ready",
+      missing: "Needs API key",
+      optional: "Optional key"
+    },
+    actions: {
+      add: "Add provider",
+      save: "Save key",
+      saving: "Saving...",
+      saved: "Saved"
+    },
+    form: {
+      helper: "Enter the API key for this provider and save it locally.",
+      saved: "API key saved locally"
+    },
+    errors: {
+      load: "Could not load providers right now.",
+      save: "Could not save this API key."
+    },
+    custom: {
+      title: "Add provider",
+      description: "Create a custom provider with your own base URL and API key.",
+      fields: {
+        name: "Provider name",
+        baseUrl: "Base URL",
+        apiKey: "API key"
+      },
+      actions: {
+        cancel: "Cancel",
+        create: "Create provider",
+        creating: "Creating..."
+      },
+      errors: {
+        required: "Provider name and base URL are required.",
+        create: "Could not create this provider."
+      }
+    }
+  },
   shell: {
     search: "Search workspace",
     workspace: "Workspace",
