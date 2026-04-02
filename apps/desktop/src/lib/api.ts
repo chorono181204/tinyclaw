@@ -129,7 +129,7 @@ export function getSession(sessionId: string) {
 
 export async function sendSessionMessage(
   sessionId: string,
-  payload: { message: string; model?: string },
+  payload: { message: string; model?: string; provider_id?: string },
   onEvent: (event: ChatStreamEvent) => void,
 ) {
   const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}/send`, {

@@ -2,6 +2,8 @@ import json
 
 from fastapi.testclient import TestClient
 
+from app.services import model_runtime_service
+
 
 def test_list_sessions_bootstraps_main_session(client: TestClient) -> None:
     response = client.get("/sessions")
@@ -43,3 +45,35 @@ def test_send_streams_events_and_persists_messages(client: TestClient) -> None:
     messages = session_response.json()["messages"]
     assert messages[-2]["role"] == "user"
     assert messages[-1]["role"] == "assistant"
+
+
+def test_send_uses_provider_backed_completion(
+    client: TestClient,
+    monkeypatch,
+) -> None:
+    client.put("/providers/openai", json={"api_key": "sk-test-12345678"})
+
+    def fake_complete_chat(*, provider_id: str | None, model: str | None, messages: list[dict[str, str]]) -> str:
+        assert provider_id == "openai"
+        assert model == "gpt-4.1-mini"
+        assert messages[-1]["content"] == "Hello from Ducky"
+        return "Provider-backed answer"
+
+    monkeypatch.setattr(model_runtime_service, "complete_chat", fake_complete_chat)
+    monkeypatch.setattr("app.services.session_service.complete_chat", fake_complete_chat)
+
+    with client.stream(
+        "POST",
+        "/sessions/main/send",
+        json={
+            "message": "Hello from Ducky",
+            "model": "gpt-4.1-mini",
+            "provider_id": "openai",
+        },
+    ) as response:
+        assert response.status_code == 200
+        body = "".join(chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk for chunk in response.iter_text())
+
+    assert "event: tool_started" in body
+    assert "event: done" in body
+    assert "Provider-backed answer" in body

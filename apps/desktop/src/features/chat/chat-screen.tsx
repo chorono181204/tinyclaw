@@ -47,9 +47,42 @@ type ToolItem = {
 };
 
 const modelOptions = [
-  "gpt-5.1-codex · openai",
-  "claude-sonnet-4 · anthropic",
-  "gemini-2.5-pro · google",
+  {
+    label: "gpt-4.1-mini · openai",
+    model: "gpt-4.1-mini",
+    providerId: "openai",
+    value: "openai:gpt-4.1-mini",
+  },
+  {
+    label: "gpt-4.1-mini · openrouter",
+    model: "openai/gpt-4.1-mini",
+    providerId: "openrouter",
+    value: "openrouter:openai/gpt-4.1-mini",
+  },
+  {
+    label: "grok-3-mini-beta · xai",
+    model: "grok-3-mini-beta",
+    providerId: "xai",
+    value: "xai:grok-3-mini-beta",
+  },
+  {
+    label: "deepseek-chat · deepseek",
+    model: "deepseek-chat",
+    providerId: "deepseek",
+    value: "deepseek:deepseek-chat",
+  },
+  {
+    label: "llama-3.3-70b-versatile · groq",
+    model: "llama-3.3-70b-versatile",
+    providerId: "groq",
+    value: "groq:llama-3.3-70b-versatile",
+  },
+  {
+    label: "mistral-small-latest · mistral",
+    model: "mistral-small-latest",
+    providerId: "mistral",
+    value: "mistral:mistral-small-latest",
+  },
 ];
 
 function ToolbarSelect({
@@ -185,7 +218,7 @@ function MessageBubble({
 }
 
 export function ChatScreen({ t }: ChatScreenProps) {
-  const [activeModel, setActiveModel] = useState(modelOptions[0]);
+  const [activeModel, setActiveModel] = useState(modelOptions[0].value);
   const [activeSessionId, setActiveSessionId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -200,6 +233,10 @@ export function ChatScreen({ t }: ChatScreenProps) {
   const sessionOptions = useMemo(
     () => sessions.map((session) => ({ label: session.title, value: session.id })),
     [sessions],
+  );
+  const selectedModelOption = useMemo(
+    () => modelOptions.find((option) => option.value === activeModel) ?? modelOptions[0],
+    [activeModel],
   );
 
   useEffect(() => {
@@ -264,7 +301,11 @@ export function ChatScreen({ t }: ChatScreenProps) {
     try {
       await sendSessionMessage(
         activeSessionId,
-        { message: trimmed, model: activeModel },
+        {
+          message: trimmed,
+          model: selectedModelOption.model,
+          provider_id: selectedModelOption.providerId,
+        },
         handleStreamEvent,
       );
       await loadSession(activeSessionId, false);
@@ -337,7 +378,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
         <ToolbarSelect onValueChange={setActiveSessionId} options={sessionOptions} value={activeSessionId || ""} />
         <ToolbarSelect
           onValueChange={setActiveModel}
-          options={modelOptions.map((model) => ({ label: model, value: model }))}
+          options={modelOptions.map((model) => ({ label: model.label, value: model.value }))}
           value={activeModel}
         />
       </div>
@@ -379,7 +420,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
                   <div className="mt-5 flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="font-medium text-foreground">{t("chat.mock.assistantName")}</span>
                     <span>{t("chat.states.streaming")}</span>
-                    <span>{activeModel}</span>
+                    <span>{selectedModelOption.label}</span>
                   </div>
                 </div>
               ) : null}

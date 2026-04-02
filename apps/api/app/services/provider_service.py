@@ -323,6 +323,24 @@ def create_custom_provider(name: str, base_url: str, api_key: str) -> ProviderIt
     return _provider_to_item(provider, normalized_key, is_custom=True)
 
 
+def get_provider_runtime(provider_id: str) -> dict[str, Any]:
+    store = _read_store()
+    provider = next((item for item in BUILTIN_PROVIDERS if item["id"] == provider_id), None)
+    is_custom = False
+    if provider is None:
+        provider = next((item for item in store["custom_providers"] if item["id"] == provider_id), None)
+        is_custom = provider is not None
+    if provider is None:
+        raise KeyError(provider_id)
+
+    api_key = (store["keys"].get(provider_id) or "").strip()
+    return {
+        **provider,
+        "api_key": api_key,
+        "is_custom": is_custom,
+    }
+
+
 def test_provider_connection(provider_id: str) -> ProviderConnectionTestResponse:
     store = _read_store()
     provider = next((item for item in BUILTIN_PROVIDERS if item["id"] == provider_id), None)

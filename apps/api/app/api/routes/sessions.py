@@ -46,6 +46,7 @@ def send_message(session_id: str, payload: SessionSendRequest) -> StreamingRespo
     stream = stream_session_reply(
         session_id=session_id,
         message=payload.message,
+        provider_id=payload.provider_id,
         model=payload.model,
     )
     return StreamingResponse(stream, media_type="text/event-stream")

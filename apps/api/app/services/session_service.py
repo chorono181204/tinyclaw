@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from app.repositories.session_repository import read_store, write_store
 from app.schemas.sessions import SessionItem, SessionMessage
+from app.services.model_runtime_service import complete_chat
 
 
 def _now_iso() -> str:
@@ -84,44 +85,12 @@ def get_session_with_messages(session_id: str) -> tuple[SessionItem, list[Sessio
     return _session_to_schema(session), messages
 
 
-def _build_mock_response(message: str) -> tuple[list[dict[str, str]], str]:
-    lowered = message.lower()
-    if "trello" in lowered:
-        tools = [
-            {
-                "detail": "with from skills/trello/SKILL.md",
-                "kind": "read",
-                "summary": "1 tool read",
-            },
-            {
-                "detail": 'with if [ -n "$TRELLO_API_KEY" ] && [ -n "$TRELLO_TOKEN" ]; then echo ready; else echo missing; fi',
-                "kind": "exec",
-                "summary": "1 tool exec",
-            },
-        ]
-        response = (
-            "Ducky checked the Trello skill first, then verified the expected environment keys. "
-            "The runtime is still missing `TRELLO_API_KEY` and `TRELLO_TOKEN`, so it cannot call the Trello API yet. "
-            "Add those credentials in Config and send the request again."
-        )
-        return tools, response
-
-    tools = [
-        {
-            "detail": "with list files in skills, `ls skills`",
-            "kind": "exec",
-            "summary": "1 tool exec",
-        }
-    ]
-    response = (
-        f"Ducky received: \"{message.strip()}\". "
-        "This first runtime slice is streaming through the local session service, so the UI now behaves like a real chat workspace. "
-        "The next step is replacing this mocked response path with provider-backed model execution."
-    )
-    return tools, response
-
-
-def stream_session_reply(session_id: str, message: str, model: str | None = None) -> Generator[str, None, None]:
+def stream_session_reply(
+    session_id: str,
+    message: str,
+    provider_id: str | None = None,
+    model: str | None = None,
+) -> Generator[str, None, None]:
     store = read_store()
     _ensure_default_session(store)
     session = next((item for item in store["sessions"] if item["id"] == session_id), None)
@@ -141,13 +110,44 @@ def stream_session_reply(session_id: str, message: str, model: str | None = None
     run_id = f"run-{uuid4().hex[:12]}"
     yield _sse("started", {"run_id": run_id, "session_id": session_id, "message": user_message})
 
-    tool_items, assistant_text = _build_mock_response(message)
-    for tool in tool_items:
-        tool_id = f"tool-{uuid4().hex[:10]}"
-        started = {"id": tool_id, **tool, "status": "running"}
-        yield _sse("tool_started", started)
-        finished = {"id": tool_id, **tool, "status": "completed"}
-        yield _sse("tool_finished", finished)
+    conversation_messages = [
+        {"role": item["role"], "content": item["content"]}
+        for item in session["messages"]
+        if item["id"] != user_message["id"]
+    ]
+    conversation_messages.append({"role": "user", "content": user_message["content"]})
+
+    tool_id = f"tool-{uuid4().hex[:10]}"
+    provider_label = provider_id or "provider"
+    tool_summary = "1 tool exec"
+    tool_detail = f"with {provider_label} chat completion request"
+    yield _sse(
+        "tool_started",
+        {
+            "id": tool_id,
+            "detail": tool_detail,
+            "kind": "exec",
+            "summary": tool_summary,
+            "status": "running",
+        },
+    )
+
+    assistant_text = complete_chat(
+        provider_id=provider_id,
+        model=model,
+        messages=conversation_messages,
+    )
+
+    yield _sse(
+        "tool_finished",
+        {
+            "id": tool_id,
+            "detail": tool_detail,
+            "kind": "exec",
+            "summary": tool_summary,
+            "status": "completed",
+        },
+    )
 
     cursor = 0
     chunk_size = 28
