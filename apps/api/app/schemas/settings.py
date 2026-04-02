@@ -6,8 +6,14 @@ class ChatDefaults(BaseModel):
     model: str | None = None
 
 
+class RuntimeSummary(BaseModel):
+    ready_models: int = 0
+    total_models: int = 0
+
+
 class SettingsResponse(BaseModel):
     chat_defaults: ChatDefaults
+    runtime: RuntimeSummary
 
 
 class SettingsUpdateRequest(BaseModel):

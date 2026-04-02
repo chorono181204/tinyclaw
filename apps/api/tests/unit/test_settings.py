@@ -9,7 +9,11 @@ def test_settings_defaults_start_empty(client: TestClient) -> None:
         "chat_defaults": {
             "provider_id": None,
             "model": None,
-        }
+        },
+        "runtime": {
+            "ready_models": 0,
+            "total_models": 8,
+        },
     }
 
 
@@ -33,3 +37,4 @@ def test_settings_can_persist_chat_defaults(client: TestClient) -> None:
         "provider_id": "anthropic",
         "model": "claude-3-7-sonnet-latest",
     }
+    assert get_response.json()["runtime"]["total_models"] == 8

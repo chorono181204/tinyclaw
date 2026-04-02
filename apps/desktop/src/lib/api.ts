@@ -87,6 +87,17 @@ export type AppSettings = {
     provider_id: string | null;
     model: string | null;
   };
+  runtime: {
+    ready_models: number;
+    total_models: number;
+  };
+};
+
+export type AppSettingsUpdate = {
+  chat_defaults: {
+    provider_id: string | null;
+    model: string | null;
+  };
 };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -117,7 +128,7 @@ export function getAppSettings() {
   return request<AppSettings>("/settings");
 }
 
-export function updateAppSettings(payload: AppSettings) {
+export function updateAppSettings(payload: AppSettingsUpdate) {
   return request<AppSettings>("/settings", {
     method: "PUT",
     body: JSON.stringify(payload),
