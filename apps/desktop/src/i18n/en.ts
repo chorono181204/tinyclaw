@@ -63,6 +63,8 @@ export const en = {
     actions: {
       add: "Add provider",
       save: "Save key",
+      test: "Test connection",
+      testing: "Testing...",
       saving: "Saving...",
       saved: "Saved"
     },
@@ -72,7 +74,8 @@ export const en = {
     },
     errors: {
       load: "Could not load providers right now.",
-      save: "Could not save this API key."
+      save: "Could not save this API key.",
+      test: "Could not test this provider right now."
     },
     custom: {
       title: "Add provider",

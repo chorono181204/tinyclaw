@@ -63,6 +63,8 @@ export const vi = {
     actions: {
       add: "Thêm provider",
       save: "Lưu key",
+      test: "Kiểm tra kết nối",
+      testing: "Đang kiểm tra...",
       saving: "Đang lưu...",
       saved: "Đã lưu"
     },
@@ -72,7 +74,8 @@ export const vi = {
     },
     errors: {
       load: "Chưa tải được danh sách provider.",
-      save: "Chưa lưu được API key này."
+      save: "Chưa lưu được API key này.",
+      test: "Chưa kiểm tra được provider này."
     },
     custom: {
       title: "Thêm provider",

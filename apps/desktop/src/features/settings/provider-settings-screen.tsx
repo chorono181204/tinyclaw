@@ -4,14 +4,22 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
-import { PlusIcon } from "../../components/shell/icons";
-import { listProviders, saveProviderApiKey, type ProviderItem } from "../../lib/api";
+import { PlusIcon, RefreshIcon } from "../../components/shell/icons";
+import {
+  listProviders,
+  saveProviderApiKey,
+  testProviderConnection,
+  type ProviderConnectionTestResult,
+  type ProviderItem,
+} from "../../lib/api";
 import type { Translator } from "../../i18n/provider";
 import { CustomProviderDialog } from "./custom-provider-dialog";
 import { ProviderLogo } from "./provider-icons";
 
 type DraftMap = Record<string, string>;
 type SaveStateMap = Record<string, "idle" | "saving" | "saved">;
+type TestStateMap = Record<string, "idle" | "testing">;
+type TestResultMap = Record<string, ProviderConnectionTestResult | undefined>;
 
 function ProviderStatus({
   hasApiKey,
@@ -38,14 +46,20 @@ function ProviderCard({
   item,
   onDraftChange,
   onSave,
+  onTest,
   saveState,
+  testState,
+  testResult,
   t,
 }: {
   draftValue: string;
   item: ProviderItem;
   onDraftChange: (value: string) => void;
   onSave: () => void;
+  onTest: () => void;
   saveState: "idle" | "saving" | "saved";
+  testState: "idle" | "testing";
+  testResult?: ProviderConnectionTestResult;
   t: Translator;
 }) {
   const helperText = item.has_api_key
@@ -84,14 +98,31 @@ function ProviderCard({
           />
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">{helperText}</p>
-            <Button onClick={onSave} size="sm" variant="default">
-              {saveState === "saving"
-                ? t("providers.actions.saving")
-                : saveState === "saved"
-                  ? t("providers.actions.saved")
-                  : t("providers.actions.save")}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={onTest} size="sm" variant="outline">
+                <span className={testState === "testing" ? "animate-spin" : ""}>
+                  <RefreshIcon />
+                </span>
+                {testState === "testing"
+                  ? t("providers.actions.testing")
+                  : t("providers.actions.test")}
+              </Button>
+              <Button onClick={onSave} size="sm" variant="default">
+                {saveState === "saving"
+                  ? t("providers.actions.saving")
+                  : saveState === "saved"
+                    ? t("providers.actions.saved")
+                    : t("providers.actions.save")}
+              </Button>
+            </div>
           </div>
+          {testResult ? (
+            <p
+              className={testResult.ok ? "text-sm text-success" : "text-sm text-destructive"}
+            >
+              {testResult.message}
+            </p>
+          ) : null}
         </div>
       </CardContent>
     </Card>
@@ -104,6 +135,8 @@ export function ProviderSettingsScreen({ t }: { t: Translator }) {
   const [providers, setProviders] = useState<ProviderItem[]>([]);
   const [drafts, setDrafts] = useState<DraftMap>({});
   const [saveStates, setSaveStates] = useState<SaveStateMap>({});
+  const [testStates, setTestStates] = useState<TestStateMap>({});
+  const [testResults, setTestResults] = useState<TestResultMap>({});
 
   useEffect(() => {
     let alive = true;
@@ -116,6 +149,9 @@ export function ProviderSettingsScreen({ t }: { t: Translator }) {
         setProviders(response.items);
         setDrafts(
           Object.fromEntries(response.items.map((item) => [item.id, ""])) satisfies DraftMap
+        );
+        setTestStates(
+          Object.fromEntries(response.items.map((item) => [item.id, "idle"])) satisfies TestStateMap
         );
       })
       .catch(() => {
@@ -156,6 +192,23 @@ export function ProviderSettingsScreen({ t }: { t: Translator }) {
     }
   }
 
+  async function handleTest(providerId: string) {
+    setTestStates((current) => ({ ...current, [providerId]: "testing" }));
+    setError(null);
+
+    try {
+      const result = await testProviderConnection(providerId);
+      setTestResults((current) => ({ ...current, [providerId]: result }));
+    } catch {
+      setTestResults((current) => ({
+        ...current,
+        [providerId]: { ok: false, message: t("providers.errors.test"), status_code: null },
+      }));
+    } finally {
+      setTestStates((current) => ({ ...current, [providerId]: "idle" }));
+    }
+  }
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
@@ -184,7 +237,10 @@ export function ProviderSettingsScreen({ t }: { t: Translator }) {
               setDrafts((current) => ({ ...current, [item.id]: value }))
             }
             onSave={() => void handleSave(item.id)}
+            onTest={() => void handleTest(item.id)}
             saveState={saveStates[item.id] ?? "idle"}
+            testResult={testResults[item.id]}
+            testState={testStates[item.id] ?? "idle"}
             t={t}
           />
         ))}
@@ -197,6 +253,7 @@ export function ProviderSettingsScreen({ t }: { t: Translator }) {
           );
           setDrafts((current) => ({ ...current, [item.id]: "" }));
           setSaveStates((current) => ({ ...current, [item.id]: "idle" }));
+          setTestStates((current) => ({ ...current, [item.id]: "idle" }));
         }}
         onOpenChange={setCustomProviderDialogOpen}
         open={customProviderDialogOpen}

@@ -35,3 +35,9 @@ class CustomProviderCreateRequest(BaseModel):
 
 class CustomProviderCreateResponse(BaseModel):
     item: ProviderItem
+
+
+class ProviderConnectionTestResponse(BaseModel):
+    ok: bool
+    message: str
+    status_code: int | None = None
