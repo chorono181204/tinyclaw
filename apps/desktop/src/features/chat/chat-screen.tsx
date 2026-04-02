@@ -26,12 +26,14 @@ import { Textarea } from "../../components/ui/textarea";
 import type { Translator } from "../../i18n/provider";
 import { cn } from "../../lib/cn";
 import {
+  getAppSettings,
   type ChatStreamEvent,
   type SessionItem,
   type SessionMessage,
   getSession,
   listSessions,
   sendSessionMessage,
+  updateAppSettings,
 } from "../../lib/api";
 
 type ChatScreenProps = {
@@ -253,6 +255,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
 
   useEffect(() => {
     void loadSessions(true);
+    void loadChatDefaults();
   }, []);
 
   useEffect(() => {
@@ -275,6 +278,25 @@ export function ChatScreen({ t }: ChatScreenProps) {
       setError(loadError instanceof Error ? loadError.message : t("chat.errors.load"));
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function loadChatDefaults() {
+    try {
+      const response = await getAppSettings();
+      const providerId = response.chat_defaults.provider_id;
+      const model = response.chat_defaults.model;
+      if (!providerId || !model) {
+        return;
+      }
+      const matched = modelOptions.find(
+        (option) => option.providerId === providerId && option.model === model,
+      );
+      if (matched) {
+        setActiveModel(matched.value);
+      }
+    } catch {
+      // Keep the local default option if settings are not available yet.
     }
   }
 
@@ -328,6 +350,24 @@ export function ChatScreen({ t }: ChatScreenProps) {
     } finally {
       setIsSending(false);
       setStreamingAssistant("");
+    }
+  }
+
+  async function handleModelChange(value: string) {
+    setActiveModel(value);
+    const option = modelOptions.find((item) => item.value === value);
+    if (!option) {
+      return;
+    }
+    try {
+      await updateAppSettings({
+        chat_defaults: {
+          provider_id: option.providerId,
+          model: option.model,
+        },
+      });
+    } catch {
+      // Keep the UI responsive even if settings persistence fails.
     }
   }
 
@@ -389,7 +429,7 @@ export function ChatScreen({ t }: ChatScreenProps) {
       <div className="flex items-center gap-4 border-b border-border/60 px-6 py-4">
         <ToolbarSelect onValueChange={setActiveSessionId} options={sessionOptions} value={activeSessionId || ""} />
         <ToolbarSelect
-          onValueChange={setActiveModel}
+          onValueChange={handleModelChange}
           options={modelOptions.map((model) => ({ label: model.label, value: model.value }))}
           value={activeModel}
         />

@@ -68,6 +68,13 @@ export type ChatStreamEvent =
   | { event: "message_delta"; payload: { delta: string; run_id: string } }
   | { event: "done"; payload: { message: SessionMessage; model: string | null; run_id: string; session: SessionItem } };
 
+export type AppSettings = {
+  chat_defaults: {
+    provider_id: string | null;
+    model: string | null;
+  };
+};
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
@@ -86,6 +93,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export function listProviders() {
   return request<ProviderListResponse>("/providers");
+}
+
+export function getAppSettings() {
+  return request<AppSettings>("/settings");
+}
+
+export function updateAppSettings(payload: AppSettings) {
+  return request<AppSettings>("/settings", {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
 }
 
 export function saveProviderApiKey(providerId: string, apiKey: string) {
